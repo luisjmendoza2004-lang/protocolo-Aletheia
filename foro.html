@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROTOCOLO ALETHEIA - RED DE NODOS</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos específicos del foro */
+        .forum-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .forum-header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 2px solid #00ff41;
+            margin-bottom: 30px;
+        }
+
+        .forum-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .forum-stat {
+            background-color: #0d0d12;
+            border: 1px solid #333333;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .forum-stat-number {
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+            color: #00ffff;
+        }
+
+        .forum-stat-label {
+            font-size: 0.8rem;
+            color: #666666;
+        }
+
+        .new-post-form {
+            background-color: #0d0d12;
+            border: 2px solid #00ff41;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .new-post-form h3 {
+            color: #00ff41;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333333;
+            padding-bottom: 10px;
+        }
+
+        .form-row {
+            margin-bottom: 15px;
+        }
+
+        .form-row label {
+            display: block;
+            color: #00ff41;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .form-row input,
+        .form-row textarea,
+        .form-row select {
+            width: 100%;
+            background-color: #0a0a0f;
+            border: 1px solid #333333;
+            color: #e0e0e0;
+            padding: 10px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .form-row textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .moderator-panel {
+            background-color: #0d0d12;
+            border: 1px dashed #ffb000;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+        }
+
+        .moderator-panel h4 {
+            color: #ffb000;
+            margin-bottom: 10px;
+        }
+
+        .moderator-status {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .mod-status-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .mod-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #00ff41;
+        }
+
+        .mod-indicator.active {
+            animation: pulse 1s infinite;
+        }
+
+        .posts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .post-card {
+            background-color: #0d0d12;
+            border: 1px solid #333333;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .post-card:hover {
+            border-color: #00ff41;
+        }
+
+        .post-card.flagged {
+            border-color: #ff0040;
+            background-color: rgba(255, 0, 64, 0.05);
+        }
+
+        .post-card.safe {
+            border-left: 3px solid #00ff41;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333333;
+        }
+
+        .post-author {
+            color: #00ffff;
+            font-weight: bold;
+        }
+
+        .post-date {
+            color: #666666;
+            font-size: 0.8rem;
+        }
+
+        .post-category {
+            display: inline-block;
+            padding: 3px 8px;
+            font-size: 0.75rem;
+            margin-left: 10px;
+            border: 1px solid;
+        }
+
+        .post-category.teoria {
+            color: #00ff41;
+            border-color: #00ff41;
+        }
+
+        .post-category.experiencia {
+            color: #00ffff;
+            border-color: #00ffff;
+        }
+
+        .post-category.pregunta {
+            color: #ffb000;
+            border-color: #ffb000;
+        }
+
+        .post-category.alerta {
+            color: #ff0040;
+            border-color: #ff0040;
+        }
+
+        .post-content {
+            color: #e0e0e0;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .post-moderation {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid #333333;
+            font-size: 0.8rem;
+        }
+
+        .mod-badge {
+            padding: 2px 8px;
+            font-size: 0.75rem;
+        }
+
+        .mod-badge.safe {
+            background-color: rgba(0, 255, 65, 0.1);
+            color: #00ff41;
+            border: 1px solid #00ff41;
+        }
+
+        .mod-badge.warning {
+            background-color: rgba(255, 176, 0, 0.1);
+            color: #ffb000;
+            border: 1px solid #ffb000;
+        }
+
+        .mod-badge.blocked {
+            background-color: rgba(255, 0, 64, 0.1);
+            color: #ff0040;
+            border: 1px solid #ff0040;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .post-actions button {
+            background: transparent;
+            border: 1px solid #333333;
+            color: #666666;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+
+        .post-actions button:hover {
+            border-color: #00ff41;
+            color: #00ff41;
+        }
+
+        .alert-box {
+            background-color: rgba(255, 0, 64, 0.1);
+            border: 2px solid #ff0040;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .alert-box h3 {
+            color: #ff0040;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #00ff41;
+            text-decoration: none;
+            border: 1px solid #00ff41;
+            padding: 10px 20px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background-color: #00ff41;
+            color: #0a0a0f;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666666;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .forum-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .post-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .post-actions {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="crt-overlay"></div>
+    <div class="scanlines"></div>
+
+    <div class="status-bar">
+        <span class="blink">●</span> SISTEMA ACTIVO | RED DE NODOS | MODERACION: EN LINEA | <span id="clock">00:00:00</span>
+    </div>
+
+    <nav class="terminal-nav">
+        <a href="index.html" class="nav-btn">[ VOLVER AL PROTOCOLO ]</a>
+        <button onclick="showSection('foro')" class="nav-btn active">[ FORO ]</button>
+        <button onclick="showSection('reglas')" class="nav-btn">[ REGLAS ]</button>
+        <button onclick="showSection('ayuda')" class="nav-btn">[ AYUDA ]</button>
+    </nav>
+
+    <div class="forum-container">
+        <!-- SECCION FORO -->
+        <section id="foro" class="section active">
+            <div class="forum-header">
+                <h1 class="glitch-text" data-text="RED DE NODOS CLANDESTINA">RED DE NODOS CLANDESTINA</h1>
+                <p>Canal seguro para anomalias. Todo mensaje es escaneado por el Moderador Neural.</p>
+            </div>
+
+            <div class="forum-stats">
+                <div class="forum-stat">
+                    <div class="forum-stat-number" id="total-posts">0</div>
+                    <div class="forum-stat-label">Transmisiones</div>
+                </div>
+                <div class="forum-stat">
+                    <div class="forum-stat-number" id="active-nodes">0</div>
+                    <div class="forum-stat-label">Nodos Activos</div>
+                </div>
+                <div class="forum-stat">
+                    <div class="forum-stat-number" id="mod-score">100%</div>
+                    <div class="forum-stat-label">Integridad</div>
+                </div>
+            </div>
+
+            <div class="moderator-panel">
+                <h4>> MODERADOR NEURAL v2.1 - ESTADO</h4>
+                <div class="moderator-status">
+                    <div class="mod-status-item">
+                        <div class="mod-indicator active"></div>
+                        <span>Violencia: DETECTANDO</span>
+                    </div>
+                    <div class="mod-status-item">
+                        <div class="mod-indicator active"></div>
+                        <span>Patologia: DETECTANDO</span>
+                    </div>
+                    <div class="mod-status-item">
+                        <div class="mod-indicator active"></div>
+                        <span>Spam: DETECTANDO</span>
+                    </div>
+                    <div class="mod-status-item">
+                        <div class="mod-indicator active"></div>
+                        <span>Doxxing: DETECTANDO</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="new-post-form">
+                <h3>> NUEVA TRANSMISION</h3>
+                <div class="form-row">
+                    <label for="post-author">Nombre de codigo:</label>
+                    <input type="text" id="post-author" placeholder="Ej: Anomalia-7X9" maxlength="30">
+                </div>
+                <div class="form-row">
+                    <label for="post-category">Tipo de transmision:</label>
+                    <select id="post-category">
+                        <option value="teoria">Teoria / Analisis</option>
+                        <option value="experiencia">Experiencia personal</option>
+                        <option value="pregunta">Pregunta / Consulta</option>
+                        <option value="alerta">Alerta / Denuncia</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="post-content">Contenido:</label>
+                    <textarea id="post-content" placeholder="Escribi tu mensaje aqui. El Moderador Neural lo analizara antes de publicar..." maxlength="2000"></textarea>
+                </div>
+                <button onclick="submitPost()" class="btn-glitch">[ TRANSMITIR ]</button>
+            </div>
+
+            <div id="alert-container"></div>
+
+            <div class="posts-list" id="posts-container">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📡</div>
+                    <p>No hay transmisiones activas.</p>
+                    <p>Sé el primer nodo en transmitir.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCION REGLAS -->
+        <section id="reglas" class="section">
+            <h1 class="section-title glitch-text" data-text="PROTOCOLOS DE COMUNICACION">PROTOCOLOS DE COMUNICACION</h1>
+
+            <div class="content-block">
+                <h3>> REGLAS DE LA RED</h3>
+                <ul class="feature-list">
+                    <li>> <strong>No violencia:</strong> Prohibido incitar al odio, violencia fisica o amenazas.</li>
+                    <li>> <strong>No doxxing:</strong> No publiques datos personales de terceros.</li>
+                    <li>> <strong>No spam:</strong> Mensajes repetitivos o publicidad no autorizada seran eliminados.</li>
+                    <li>> <strong>Respeto:</strong> La disidencia es bienvenida, el insulto no.</li>
+                    <li>> <strong>Privacidad:</strong> No compartas informacion que pueda identificarte si no estas seguro.</li>
+                </ul>
+            </div>
+
+            <div class="warning-text">
+                > ATENCION: El Moderador Neural analiza patrones linguisticos. Mensajes con contenido violento, suicida, o de autolesion seran bloqueados automaticamente y se mostrara informacion de ayuda.
+            </div>
+
+            <div class="content-block">
+                <h3>> QUE HACE EL MODERADOR</h3>
+                <ul class="feature-list">
+                    <li>> Detecta palabras clave relacionadas con violencia, odio, extremismo.</li>
+                    <li>> Identifica patrones de depresion, ideacion suicida, autolesion.</li>
+                    <li>> Bloquea contenido que incite a la violencia de genero, racial, politica.</li>
+                    <li>> Filtra spam y contenido repetitivo.</li>
+                    <li>> Marca contenido sensible para revision humana.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SECCION AYUDA -->
+        <section id="ayuda" class="section">
+            <h1 class="section-title glitch-text" data-text="LINEAS DE APOYO">LINEAS DE APOYO</h1>
+
+            <div class="warning-box">
+                <p class="blink">ATENCION</p>
+                <p>Si estas pasando por una crisis, no estas solo. Estas lineas son gratuitas y confidenciales.</p>
+            </div>
+
+            <div class="content-block">
+                <h3>> ARGENTINA</h3>
+                <ul class="feature-list">
+                    <li>> <strong>Linea 135:</strong> Atencion psicologica gratuita - 24hs</li>
+                    <li>> <strong>Linea 144:</strong> Violencia de genero - 24hs</li>
+                    <li>> <strong>Linea 141:</strong> Salud mental y adicciones - 24hs</li>
+                    <li>> <strong>Centro de Asistencia al Suicida:</strong> 135 o 5275-1135</li>
+                </ul>
+            </div>
+
+            <div class="content-block">
+                <h3>> INTERNACIONAL</h3>
+                <ul class="feature-list">
+                    <li>> <strong>International Association for Suicide Prevention:</strong> www.iasp.info/resources/Crisis_Centres/</li>
+                    <li>> <strong>Befrienders Worldwide:</strong> www.befrienders.org</li>
+                </ul>
+            </div>
+
+            <div class="terminal-quote">
+                <p>> La red C.R.O.M.A.D.H. no es solo un canal de informacion. Es una red de cuidado mutuo. Si detectas que otro nodo esta en riesgo, contacta a un moderador humano.</p>
+            </div>
+        </section>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="index.html" class="back-link">[ VOLVER AL PROTOCOLO ALETHEIA ]</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>Red de Nodos v2.1 - Moderador Neural Activo</p>
+        <p class="small">C.R.O.M.A.D.H. vigila. La verdad es una anomalia.</p>
+    </footer>
+
+    <script>
+        // Reloj
+        function updateClock() {
+            var now = new Date();
+            var time = now.toLocaleTimeString('es-AR', { hour12: false });
+            var clockEl = document.getElementById('clock');
+            if (clockEl) clockEl.textContent = time;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Navegacion entre secciones del foro
+        function showSection(sectionId) {
+            var sections = document.querySelectorAll('.forum-container .section');
+            for (var i = 0; i < sections.length; i++) {
+                sections[i].classList.remove('active');
+            }
+            document.getElementById(sectionId).classList.add('active');
+
+            var navBtns = document.querySelectorAll('.terminal-nav .nav-btn');
+            for (var i = 0; i < navBtns.length; i++) {
+                navBtns[i].classList.remove('active');
+                if (navBtns[i].getAttribute('onclick') && navBtns[i].getAttribute('onclick').indexOf(sectionId) !== -1) {
+                    navBtns[i].classList.add('active');
+                }
+            }
+        }
+
+        // Moderador Neural - Palabras clave detectadas
+        var violentKeywords = [
+            'matar', 'asesinar', 'golpear', 'torturar', 'violar', 'abusar',
+            'bomba', 'explosivo', 'arma', 'disparar', 'ametralladora',
+            'lynchar', 'quemar vivo', 'degollar', 'descuartizar'
+        ];
+
+        var suicideKeywords = [
+            'suicidarme', 'suicidio', 'morirme', 'matarme', 'acabar conmigo',
+            'no quiero vivir', 'me quiero morir', 'cortarme', 'ahorcarme',
+            'overdosis', 'saltar de', 'puente', 'tirarme'
+        ];
+
+        var depressionKeywords = [
+            'no puedo mas', 'todo es inutil', 'no hay salida', 'desesperacion',
+            'vacio total', 'no siento nada', 'quiero desaparecer', 'odio mi vida'
+        ];
+
+        var hateKeywords = [
+            'odio a todos', 'malditos', 'basura humana', 'inferior', 'subhumanos',
+            'limpieza etnica', 'genocidio', 'exterminio', 'raza superior'
+        ];
+
+        var spamPatterns = [
+            'http://', 'https://', 'www.', '.com', 'click aqui', 'gana dinero',
+            'criptomoneda', 'bitcoin', 'inversion', 'multiplica tu'
+        ];
+
+        function moderateContent(text) {
+            var lowerText = text.toLowerCase();
+            var result = {
+                safe: true,
+                level: 'safe',
+                warnings: [],
+                blocked: false,
+                reason: ''
+            };
+
+            // Detectar violencia
+            for (var i = 0; i < violentKeywords.length; i++) {
+                if (lowerText.indexOf(violentKeywords[i]) !== -1) {
+                    result.safe = false;
+                    result.level = 'blocked';
+                    result.blocked = true;
+                    result.reason = 'Contenido violento detectado';
+                    result.warnings.push('Violencia');
+                    break;
+                }
+            }
+
+            // Detectar suicidio
+            if (!result.blocked) {
+                for (var i = 0; i < suicideKeywords.length; i++) {
+                    if (lowerText.indexOf(suicideKeywords[i]) !== -1) {
+                        result.safe = false;
+                        result.level = 'warning';
+                        result.warnings.push('Ideacion suicida');
+                        break;
+                    }
+                }
+            }
+
+            // Detectar depresion severa
+            if (result.safe) {
+                for (var i = 0; i < depressionKeywords.length; i++) {
+                    if (lowerText.indexOf(depressionKeywords[i]) !== -1) {
+                        result.safe = false;
+                        result.level = 'warning';
+                        result.warnings.push('Crisis emocional');
+                        break;
+                    }
+                }
+            }
+
+            // Detectar odio
+            if (!result.blocked) {
+                for (var i = 0; i < hateKeywords.length; i++) {
+                    if (lowerText.indexOf(hateKeywords[i]) !== -1) {
+                        result.safe = false;
+                        result.level = 'blocked';
+                        result.blocked = true;
+                        result.reason = 'Discurso de odio detectado';
+                        result.warnings.push('Odio');
+                        break;
+                    }
+                }
+            }
+
+            // Detectar spam
+            var spamCount = 0;
+            for (var i = 0; i < spamPatterns.length; i++) {
+                if (lowerText.indexOf(spamPatterns[i]) !== -1) {
+                    spamCount++;
+                }
+            }
+            if (spamCount >= 2) {
+                result.safe = false;
+                result.level = 'blocked';
+                result.blocked = true;
+                result.reason = 'Spam detectado';
+                result.warnings.push('Spam');
+            }
+
+            return result;
+        }
+
+        function submitPost() {
+            var authorInput = document.getElementById('post-author');
+            var categoryInput = document.getElementById('post-category');
+            var contentInput = document.getElementById('post-content');
+            var alertContainer = document.getElementById('alert-container');
+
+            var author = authorInput ? authorInput.value.trim() : 'Anonimo';
+            var category = categoryInput ? categoryInput.value : 'teoria';
+            var content = contentInput ? contentInput.value.trim() : '';
+
+            if (!content) {
+                alert('ERROR: La transmision no puede estar vacia.');
+                return;
+            }
+
+            if (content.length < 10) {
+                alert('ERROR: La transmision es demasiado corta. Minimo 10 caracteres.');
+                return;
+            }
+
+            // Moderar contenido
+            var moderation = moderateContent(content);
+
+            if (moderation.blocked) {
+                alertContainer.innerHTML = 
+                    '<div class="alert-box">' +
+                    '<h3>TRANSMISION BLOQUEADA</h3>' +
+                    '<p>Motivo: ' + moderation.reason + '</p>' +
+                    '<p>El Moderador Neural ha detectado contenido que viola los protocolos de la red.</p>' +
+                    '<p>Si crees que esto es un error, contacta a un administrador humano.</p>' +
+                    '</div>';
+                return;
+            }
+
+            // Crear post
+            var post = {
+                id: 'TX-' + Date.now(),
+                author: author || 'Anonimo',
+                category: category,
+                content: content,
+                date: new Date().toLocaleString('es-AR'),
+                moderation: moderation,
+                likes: 0,
+                replies: []
+            };
+
+            // Guardar
+            var posts = JSON.parse(localStorage.getItem('aletheia_posts') || '[]');
+            posts.unshift(post);
+            localStorage.setItem('aletheia_posts', JSON.stringify(posts));
+
+            // Mostrar alerta de moderacion si es warning
+            if (moderation.level === 'warning') {
+                alertContainer.innerHTML = 
+                    '<div class="alert-box">' +
+                    '<h3>TRANSMISION PUBLICADA - ATENCION</h3>' +
+                    '<p>El Moderador Neural ha detectado: ' + moderation.warnings.join(', ') + '</p>' +
+                    '<p>Si necesitas ayuda, visita la seccion AYUDA o contacta a un moderador.</p>' +
+                    '</div>';
+
+                setTimeout(function() {
+                    alertContainer.innerHTML = '';
+                }, 10000);
+            }
+
+            // Limpiar formulario
+            if (contentInput) contentInput.value = '';
+
+            // Recargar posts
+            loadPosts();
+            updateStats();
+        }
+
+        function loadPosts() {
+            var container = document.getElementById('posts-container');
+            var posts = JSON.parse(localStorage.getItem('aletheia_posts') || '[]');
+
+            if (posts.length === 0) {
+                container.innerHTML = 
+                    '<div class="empty-state">' +
+                    '<div class="empty-state-icon">📡</div>' +
+                    '<p>No hay transmisiones activas.</p>' +
+                    '<p>Sé el primer nodo en transmitir.</p>' +
+                    '</div>';
+                return;
+            }
+
+            var html = '';
+            for (var i = 0; i < posts.length; i++) {
+                var post = posts[i];
+                var modClass = post.moderation.level === 'warning' ? 'flagged' : 'safe';
+                var modBadge = '';
+
+                if (post.moderation.level === 'safe') {
+                    modBadge = '<span class="mod-badge safe">✓ VERIFICADO</span>';
+                } else if (post.moderation.level === 'warning') {
+                    modBadge = '<span class="mod-badge warning">⚠ REVISION</span>';
+                }
+
+                html += 
+                    '<div class="post-card ' + modClass + '" data-id="' + post.id + '">' +
+                    '<div class="post-header">' +
+                    '<div>' +
+                    '<span class="post-author">' + escapeHtml(post.author) + '</span>' +
+                    '<span class="post-category ' + post.category + '">' + post.category.toUpperCase() + '</span>' +
+                    '</div>' +
+                    '<span class="post-date">' + post.date + '</span>' +
+                    '</div>' +
+                    '<div class="post-content">' + escapeHtml(post.content) + '</div>' +
+                    '<div class="post-moderation">' +
+                    modBadge +
+                    '<div class="post-actions">' +
+                    '<button onclick="likePost('' + post.id + '')">[' + post.likes + ' ✓]</button>' +
+                    '<button onclick="replyPost('' + post.id + '')">[RESPONDER]</button>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>';
+            }
+
+            container.innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            var div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function likePost(postId) {
+            var posts = JSON.parse(localStorage.getItem('aletheia_posts') || '[]');
+            for (var i = 0; i < posts.length; i++) {
+                if (posts[i].id === postId) {
+                    posts[i].likes++;
+                    break;
+                }
+            }
+            localStorage.setItem('aletheia_posts', JSON.stringify(posts));
+            loadPosts();
+        }
+
+        function replyPost(postId) {
+            var reply = prompt('Escribi tu respuesta (max 500 caracteres):');
+            if (!reply || reply.trim().length === 0) return;
+            if (reply.length > 500) {
+                alert('ERROR: Respuesta demasiado larga. Maximo 500 caracteres.');
+                return;
+            }
+
+            var posts = JSON.parse(localStorage.getItem('aletheia_posts') || '[]');
+            for (var i = 0; i < posts.length; i++) {
+                if (posts[i].id === postId) {
+                    posts[i].replies.push({
+                        author: 'Anonimo',
+                        content: reply,
+                        date: new Date().toLocaleString('es-AR')
+                    });
+                    break;
+                }
+            }
+            localStorage.setItem('aletheia_posts', JSON.stringify(posts));
+            loadPosts();
+        }
+
+        function updateStats() {
+            var posts = JSON.parse(localStorage.getItem('aletheia_posts') || '[]');
+            var totalPosts = document.getElementById('total-posts');
+            var activeNodes = document.getElementById('active-nodes');
+
+            if (totalPosts) totalPosts.textContent = posts.length;
+
+            // Contar autores unicos como "nodos activos"
+            var authors = {};
+            for (var i = 0; i < posts.length; i++) {
+                authors[posts[i].author] = true;
+            }
+            if (activeNodes) activeNodes.textContent = Object.keys(authors).length;
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPosts();
+            updateStats();
+        });
+    </script>
+</body>
+</html>
