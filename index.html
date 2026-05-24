@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROTOCOLO ALETHEIA</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Efecto CRT -->
+    <div class="crt-overlay"></div>
+    <div class="scanlines"></div>
+
+    <!-- Barra de estado -->
+    <div class="status-bar">
+        <span class="blink">●</span> SISTEMA ACTIVO | PROTOCOLO ALETHEIA v7.2.1 | ENCRIPTACION: AES-256 | <span id="clock">00:00:00</span>
+    </div>
+
+    <!-- Navegacion -->
+    <nav class="terminal-nav">
+        <button onclick="navigate('home')" class="nav-btn active">[ INICIO ]</button>
+        <button onclick="navigate('manifesto')" class="nav-btn">[ MANIFIESTO ]</button>
+        <button onclick="navigate('cuestionario')" class="nav-btn">[ EVALUACION ]</button>
+        <button onclick="navigate('adquirir')" class="nav-btn">[ ADQUIRIR LIBRO ]</button>
+        <button onclick="navigate('newsletter')" class="nav-btn">[ SUSCRIBIRSE ]</button>
+    </nav>
+
+    <!-- Seccion: INICIO -->
+    <section id="home" class="section active">
+        <div class="terminal-box">
+            <div class="terminal-header">
+                <span>root@aletheia:~$</span>
+                <span class="window-controls">_ □ ×</span>
+            </div>
+            <div class="terminal-body">
+                <p class="typing-text">Inicializando modulo de reconocimiento neural...</p>
+                <p class="typing-text delay-1">> Conexion establecida mediante proxy anonimo</p>
+                <p class="typing-text delay-2">> Descifrando capas de encriptacion...</p>
+                <p class="typing-text delay-3 success">> ACCESO CONCEDIDO. Bienvenido, anomalia.</p>
+            </div>
+        </div>
+
+        <div class="content-block glitch-text" data-text="La mente es un laberinto con espejos. Solo puedes atravesarlo con la verdad.">
+            La mente es un laberinto con espejos. Solo puedes atravesarlo con la verdad.
+        </div>
+
+        <div class="anomaly-input">
+            <label for="anomaly">> Ingresa tu anomalia (opcional):</label>
+            <input type="text" id="anomaly" placeholder="Escribi tu anomalia aqui..." autocomplete="off">
+            <button onclick="registerAnomaly()" class="btn-glitch">[ REGISTRAR ]</button>
+        </div>
+    </section>
+
+    <!-- Seccion: MANIFIESTO -->
+    <section id="manifesto" class="section">
+        <h1 class="section-title glitch-text" data-text="MANIFIESTO C.R.O.M.A.D.H.">MANIFIESTO C.R.O.M.A.D.H.</h1>
+
+        <div class="data-block">
+            <div class="stat-highlight">
+                <span class="big-number">0,0003%</span>
+                <p>de la humanidad controla mas recursos que <strong>4 mil millones</strong> de personas combinadas.</p>
+            </div>
+
+            <p class="warning-text">Eso no es desigualdad. Es una deformacion estructural. Una obscenidad politica, economica, psicologica y espiritual.</p>
+
+            <p>Ese <strong>0,0003%</strong> son los <strong class="highlight">Arquitectos del Silencio</strong>. Poseen las inteligencias artificiales que administran las emociones de las masas. Algoritmos que fabrican conformidad, miedo, confusion. No predicen comportamientos: los disenan.</p>
+
+            <p><strong>C.R.O.M.A.D.H.</strong> basa su lucha en el <em>limitarianismo</em>. Hay que combatir la riqueza extrema con la misma intensidad con la que se combate la pobreza. La opulencia desmedida es un arma contra la dignidad humana.</p>
+
+            <div class="terminal-quote">
+                <p>> Los personajes que descubris en sus paginas —Cesar, Clara, Lorenzo, Alexander, Julieta— son nodos de un campo que no usa cables ni satelites. Una red de conciencia.</p>
+                <p>> Ahora, escaneando este codigo, vos tambien sos parte de ese campo. No como lector pasivo. Como <strong>anomalia estadistica</strong> que el sistema no habia previsto.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seccion: CUESTIONARIO -->
+    <section id="cuestionario" class="section">
+        <h1 class="section-title glitch-text" data-text="EVALUACION DE COHERENCIA NEURAL">EVALUACION DE COHERENCIA NEURAL</h1>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+            <span id="progress-text">Pregunta 1 de 5</span>
+        </div>
+
+        <form id="quiz-form" onsubmit="return false;">
+            <div class="question active" data-q="1">
+                <h3>[ 1/5 ] Que es para vos la verdad en un sistema que fabrica realidades?</h3>
+                <div class="options">
+                    <label class="option-card"><input type="radio" name="q1" value="a"><span>Una herramienta de control</span></label>
+                    <label class="option-card"><input type="radio" name="q1" value="b"><span>Una resistencia silenciosa</span></label>
+                    <label class="option-card"><input type="radio" name="q1" value="c"><span>Una ilusion colectiva</span></label>
+                    <label class="option-card"><input type="radio" name="q1" value="d"><span>Una anomalia estadistica</span></label>
+                </div>
+            </div>
+
+            <div class="question" data-q="2">
+                <h3>[ 2/5 ] El limitarianismo propone:</h3>
+                <div class="options">
+                    <label class="option-card"><input type="radio" name="q2" value="a"><span>Igualar a todos por abajo</span></label>
+                    <label class="option-card"><input type="radio" name="q2" value="b"><span>Combatir la riqueza extrema como se combate la pobreza</span></label>
+                    <label class="option-card"><input type="radio" name="q2" value="c"><span>Establecer un salario universal</span></label>
+                    <label class="option-card"><input type="radio" name="q2" value="d"><span>Abolir toda forma de propiedad</span></label>
+                </div>
+            </div>
+
+            <div class="question" data-q="3">
+                <h3>[ 3/5 ] Los Arquitectos del Silencio controlan:</h3>
+                <div class="options">
+                    <label class="option-card"><input type="radio" name="q3" value="a"><span>Los medios de comunicacion tradicionales</span></label>
+                    <label class="option-card"><input type="radio" name="q3" value="b"><span>Los algoritmos que disenan emociones</span></label>
+                    <label class="option-card"><input type="radio" name="q3" value="c"><span>Los gobiernos democraticos</span></label>
+                    <label class="option-card"><input type="radio" name="q3" value="d"><span>Todas las respuestas anteriores</span></label>
+                </div>
+            </div>
+
+            <div class="question" data-q="4">
+                <h3>[ 4/5 ] C.R.O.M.A.D.H. es:</h3>
+                <div class="options">
+                    <label class="option-card"><input type="radio" name="q4" value="a"><span>Una organizacion terrorista</span></label>
+                    <label class="option-card"><input type="radio" name="q4" value="b"><span>Una red de conciencia sin cables ni satelites</span></label>
+                    <label class="option-card"><input type="radio" name="q4" value="c"><span>Un partido politico</span></label>
+                    <label class="option-card"><input type="radio" name="q4" value="d"><span>Una corporacion tecnologica</span></label>
+                </div>
+            </div>
+
+            <div class="question" data-q="5">
+                <h3>[ 5/5 ] Tu anomalia es:</h3>
+                <div class="options">
+                    <label class="option-card"><input type="radio" name="q5" value="a"><span>Un error del sistema</span></label>
+                    <label class="option-card"><input type="radio" name="q5" value="b"><span>Una posibilidad de cambio</span></label>
+                    <label class="option-card"><input type="radio" name="q5" value="c"><span>Una amenaza para el orden</span></label>
+                    <label class="option-card"><input type="radio" name="q5" value="d"><span>Todas las anteriores</span></label>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <button type="button" id="prev-btn" onclick="changeQuestion(-1)" class="btn-glitch" disabled>[ ANTERIOR ]</button>
+                <button type="button" id="next-btn" onclick="changeQuestion(1)" class="btn-glitch">[ SIGUIENTE ]</button>
+                <button type="button" id="submit-btn" onclick="calculateResult()" class="btn-glitch hidden">[ VER RESULTADO ]</button>
+            </div>
+        </form>
+
+        <div id="result-panel" class="result-panel hidden">
+            <h2 class="glitch-text" id="result-title"></h2>
+            <p id="result-desc"></p>
+            <div class="coherence-meter"><div class="meter-fill" id="meter-fill"></div></div>
+            <p class="result-code" id="result-code"></p>
+            <button onclick="navigate('adquirir')" class="btn-glitch pulse">[ ACCEDER AL LIBRO COMPLETO ]</button>
+        </div>
+    </section>
+
+    <!-- Seccion: ADQUIRIR -->
+    <section id="adquirir" class="section">
+        <h1 class="section-title glitch-text" data-text="ADQUISICION CLANDESTINA">ADQUISICION CLANDESTINA</h1>
+
+        <div class="book-showcase">
+            <div class="book-cover">
+                <div class="book-spine"></div>
+                <div class="book-front">
+                    <h2>C.R.O.M.A.D.H.</h2>
+                    <p class="subtitle">Mas alla del ultimo dia</p>
+                    <div class="classified-stamp">CLASIFICADO</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="purchase-options">
+            <div class="purchase-card">
+                <h3>[ EDICION DIGITAL ]</h3>
+                <p class="price">$4.99 USD</p>
+                <ul>
+                    <li>> PDF encriptado</li>
+                    <li>> Acceso a capitulos extra</li>
+                    <li>> Codigo de anomalia personalizado</li>
+                </ul>
+                <a href="https://mpago.la/1BYDmb2" class="btn-glitch btn-buy" target="_blank">[ COMPRAR DIGITAL ]</a>
+            </div>
+
+            <div class="purchase-card featured">
+                <div class="badge">RECOMENDADO</div>
+                <h3>[ EDICION FISICA ]</h3>
+                <p class="price">$12.99 USD</p>
+                <ul>
+                    <li>> Libro impreso + envio</li>
+                    <li>> Mapa de la red C.R.O.M.A.D.H.</li>
+                    <li>> Tarjeta de anomalia holografica</li>
+                    <li>> Acceso digital incluido</li>
+                </ul>
+                <a href="https://mpago.la/1GCwXij" class="btn-glitch btn-buy pulse" target="_blank">[ COMPRAR FISICO ]</a>
+            </div>
+
+            <div class="purchase-card">
+                <h3>[ EDICION COLECTIVA ]</h3>
+                <p class="price">$24.99 USD</p>
+                <ul>
+                    <li>> 3 ejemplares fisicos</li>
+                    <li>> Kit de inicio para celulas</li>
+                    <li>> Guia de lectura critica</li>
+                </ul>
+                <a href="https://mpago.la/169zmAM" class="btn-glitch btn-buy" target="_blank">[ COMPRAR COLECTIVO ]</a>
+            </div>
+        </div>
+
+        <div class="warning-box">
+            <p class="blink">ATENCION</p>
+            <p>Esta transaccion queda registrada como compra de material educativo. El sistema no debe saber que estas leyendo esto.</p>
+        </div>
+    </section>
+
+    <!-- Seccion: NEWSLETTER -->
+    <section id="newsletter" class="section">
+        <h1 class="section-title glitch-text" data-text="RED DE CONCIENCIA CLANDESTINA">RED DE CONCIENCIA CLANDESTINA</h1>
+
+        <div class="terminal-box">
+            <div class="terminal-header">
+                <span>root@aletheia:~$ ./subscribe.sh</span>
+                <span class="window-controls">_ □ ×</span>
+            </div>
+            <div class="terminal-body">
+                <p class="typing-text">> Inicializando canal seguro de comunicacion...</p>
+                <p class="typing-text delay-1">> Encriptacion: AES-256-GCM</p>
+                <p class="typing-text delay-2">> Proxy: activo</p>
+                <p class="typing-text delay-3 success">> Canal establecido. Listo para recibir transmisiones.</p>
+            </div>
+        </div>
+
+        <div class="newsletter-content">
+            <div class="content-block">
+                <h3 class="glitch-text" data-text=">> QUE RECIBIRAS">>> QUE RECIBIRAS</h3>
+                <ul class="feature-list">
+                    <li>> <strong>Comunicados C.R.O.M.A.D.H.</strong> — Alertas sobre nuevas deformaciones del sistema</li>
+                    <li>> <strong>Capitulos en exclusiva</strong> — Material no publicado del universo Aletheia</li>
+                    <li>> <strong>Codigos de acceso</strong> — Llaves para desbloquear contenido clasificado</li>
+                    <li>> <strong>Coordenadas de celulas</strong> — Conexion con otras anomalias en tu region</li>
+                    <li>> <strong>Informes de inteligencia</strong> — Analisis de los Arquitectos del Silencio</li>
+                </ul>
+            </div>
+
+            <div class="warning-text">
+                > ATENCION: Esta comunicacion no usa servidores corporativos. Los datos viajan por nodos descentralizados. Tu direccion queda registrada como un hash irreversible.
+            </div>
+
+            <div class="subscribe-form">
+                <h3 class="glitch-text" data-text=">> REGISTRO DE NODO">>> REGISTRO DE NODO</h3>
+
+                <div class="form-group">
+                    <label for="subscriber-name">> Nombre de codigo (opcional):</label>
+                    <input type="text" id="subscriber-name" placeholder="Ej: Anomalia-7X9" autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="subscriber-email">> Direccion segura (email): <span class="required">*</span></label>
+                    <input type="email" id="subscriber-email" placeholder="tu-email@dominio.com" required autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="subscriber-type">> Tipo de nodo:</label>
+                    <select id="subscriber-type">
+                        <option value="observador">Observador (recibe alertas)</option>
+                        <option value="activista">Activista (participa en acciones)</option>
+                        <option value="difusor">Difusor (comparte material)</option>
+                        <option value="arquitecto">Arquitecto (desarrolla protocolos)</option>
+                    </select>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="terms-check">
+                        <span>Confirmo que entiendo los riesgos. El sistema puede intentar rastrear esta comunicacion.</span>
+                    </label>
+                </div>
+
+                <button onclick="subscribeNewsletter()" class="btn-glitch pulse">[ ACTIVAR NODO ]</button>
+
+                <div id="subscribe-result" class="subscribe-result hidden"></div>
+            </div>
+
+            <div class="stats-panel">
+                <div class="stat-box">
+                    <span class="stat-number" id="subscriber-count">0</span>
+                    <span class="stat-label">Nodos activos</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">AES-256</span>
+                    <span class="stat-label">Encriptacion</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">INFINITO</span>
+                    <span class="stat-label">Anonimato</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>Protocolo Aletheia v7.2.1 — Sistema de Evaluacion de Coherencia Neural</p>
+        <p class="small">C.R.O.M.A.D.H. vigila. La verdad es una anomalia.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
