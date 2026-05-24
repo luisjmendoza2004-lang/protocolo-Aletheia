@@ -1065,17 +1065,19 @@
                     html += '<div class="post-card ' + modClass + '">' +
                         '<div class="post-header">' +
                         '<div><span class="post-author">' + escapeHtml(post.author) + '</span>' +
-                        '<span class="post-category ' + post.category + '">' + post.category.toUpperCase() + '</span></div>' +
-                        '<span class="post-date">' + date + '</span>' +
-                        '</div>' +
-                        '<div class="post-content">' + escapeHtml(post.content) + '</div>' +
-                        '<div class="post-moderation">' + modBadge +
-                        '<div class="post-actions">' +
-                        '<button onclick="likePost('' + doc.id + '')">[' + (post.likes || 0) + ' ✓]</button>' +
-                        '</div></div></div>';
-                });
-
-                container.innerHTML = html;
+                        // ✅ CÓDIGO CORREGIDO — Líneas 1068-1078
+html += '<div class="post-card ' + modClass + '">' +
+    '<div class="post-header">' +
+    '<span class="post-author">' + escapeHtml(post.author) + '</span>' +
+    '<span class="post-category">' + post.category.toUpperCase() + '</span>' +
+    '</div>' +
+    '<div class="post-date">' + date + '</div>' +
+    '<div class="post-moderation">' + modBadge + '</div>' +  // ← Cierra el div aquí
+    '<div class="post-content">' + escapeHtml(post.content) + '</div>' +
+    '<div class="post-actions">' +
+    '<button onclick="likePost(\'' + doc.id + '\')">[' + (post.likes || 0) + ']</button>' +
+    '</div>' +
+    '</div>';
                 updateStats(snapshot.size, authors.size);
 
             } catch (error) {
