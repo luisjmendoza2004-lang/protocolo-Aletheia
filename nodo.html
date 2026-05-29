@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C.R.O.M.A.D.H. — Panel de Nodo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black:    #050505;
+    --gold:     #D4AF37;
+    --gold-dim: #8a720f;
+    --gold-glow:#f0d060;
+    --white:    #F5F0E8;
+    --gray:     #1a1a1a;
+    --red:      #8B0000;
+    --green:    #27AE60;
+    --mono:     'Share Tech Mono', monospace;
+    --display:  'Bebas Neue', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--mono);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* Scanlines */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px
+    );
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background: #0a0a0a;
+    border-bottom: 1px solid #1a1a1a;
+    padding: 10px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--gold-dim);
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .topbar .brand { color: var(--gold); font-family: var(--display); font-size: 18px; letter-spacing: 0.15em; }
+  .topbar .status { display: flex; gap: 20px; align-items: center; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); display: inline-block; animation: blink 2s infinite; margin-right: 6px; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── MAIN ── */
+  .main { max-width: 900px; margin: 0 auto; padding: 32px 20px 60px; }
+
+  /* ── NODE HERO ── */
+  .node-hero {
+    border: 1px solid #222;
+    background: linear-gradient(135deg, #0d0d0d, #080808);
+    padding: 28px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .node-hero::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .node-id {
+    font-family: var(--display);
+    font-size: 48px;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 30px rgba(212,175,55,0.3);
+    line-height: 1;
+  }
+  .node-codename {
+    font-size: 13px;
+    color: #555;
+    letter-spacing: 0.25em;
+    margin-top: 6px;
+  }
+  .node-meta {
+    margin-top: 16px;
+    font-size: 11px;
+    color: #444;
+    letter-spacing: 0.15em;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .node-meta span { color: var(--gold-dim); }
+
+  /* ── STATS ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  @media(max-width:600px){ .stats-grid { grid-template-columns: 1fr 1fr; } }
+
+  .stat-card {
+    background: #0a0a0a;
+    border: 1px solid #1e1e1e;
+    padding: 20px 16px;
+    text-align: center;
+    position: relative;
+  }
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 20%; right: 20%;
+    height: 1px;
+    background: var(--gold-dim);
+    opacity: 0.3;
+  }
+  .stat-number {
+    font-family: var(--display);
+    font-size: 40px;
+    color: var(--gold);
+    line-height: 1;
+    text-shadow: 0 0 20px rgba(212,175,55,0.2);
+  }
+  .stat-label {
+    font-size: 9px;
+    color: #444;
+    letter-spacing: 0.25em;
+    margin-top: 6px;
+    text-transform: uppercase;
+  }
+
+  /* ── SECTION ── */
+  .section {
+    margin-bottom: 24px;
+    border: 1px solid #1a1a1a;
+    background: #080808;
+  }
+  .section-header {
+    background: #0d0d0d;
+    border-bottom: 1px solid #1a1a1a;
+    padding: 12px 20px;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--gold-dim);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-header::before { content: '>'; color: var(--gold); }
+  .section-body { padding: 24px 20px; }
+
+  /* ── QR ── */
+  .qr-wrapper {
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .qr-box {
+    background: #fff;
+    padding: 10px;
+    width: 160px;
+    height: 160px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .qr-box::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 1px solid var(--gold-dim);
+  }
+  .qr-box canvas, .qr-box img { width: 140px !important; height: 140px !important; }
+
+  .qr-info { flex: 1; min-width: 200px; }
+  .qr-url {
+    font-size: 10px;
+    color: #555;
+    letter-spacing: 0.1em;
+    word-break: break-all;
+    line-height: 1.7;
+    margin-bottom: 16px;
+    padding: 10px;
+    background: #0d0d0d;
+    border: 1px solid #1a1a1a;
+  }
+  .qr-url strong { color: var(--gold-dim); display: block; margin-bottom: 4px; font-size: 9px; letter-spacing: 0.25em; }
+
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .btn {
+    padding: 10px 18px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .btn-gold { background: var(--gold); color: #000; }
+  .btn-gold:hover { background: var(--gold-glow); box-shadow: 0 0 20px rgba(212,175,55,0.4); }
+  .btn-outline { background: transparent; border: 1px solid #333; color: #555; }
+  .btn-outline:hover { border-color: var(--gold-dim); color: var(--gold-dim); }
+  .btn-green { background: transparent; border: 1px solid #1a5c33; color: var(--green); }
+  .btn-green:hover { background: rgba(39,174,96,0.1); }
+
+  .copy-feedback {
+    font-size: 10px;
+    color: var(--green);
+    margin-top: 8px;
+    letter-spacing: 0.15em;
+    min-height: 16px;
+  }
+
+  /* ── ÁRBOL ── */
+  .tree-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #2a2a2a;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    line-height: 2;
+  }
+  .tree-empty strong { color: #333; display: block; font-size: 24px; margin-bottom: 8px; font-family: var(--display); }
+
+  .children-list { display: flex; flex-direction: column; gap: 2px; }
+
+  .child-item {
+    background: #0a0a0a;
+    border: 1px solid #151515;
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    transition: border-color 0.2s;
+  }
+  .child-item:hover { border-color: #2a2a2a; }
+  .child-id { font-family: var(--display); font-size: 20px; color: var(--gold-dim); letter-spacing: 0.1em; }
+  .child-codename { font-size: 10px; color: #444; letter-spacing: 0.2em; margin-top: 2px; }
+  .child-stats { text-align: right; font-size: 10px; color: #333; letter-spacing: 0.15em; }
+  .child-stats strong { color: var(--gold-dim); font-size: 16px; font-family: var(--display); display: block; }
+  .child-tipo {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    padding: 3px 8px;
+    border: 1px solid #222;
+    color: #444;
+    white-space: nowrap;
+  }
+
+  /* ── LOADING ── */
+  .loading-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 20px;
+  }
+  .loading-text { font-size: 12px; color: var(--gold-dim); letter-spacing: 0.3em; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── ERROR ── */
+  .error-screen {
+    text-align: center;
+    padding: 60px 20px;
+    display: none;
+  }
+  .error-screen h2 { font-family: var(--display); font-size: 36px; color: var(--red); letter-spacing: 0.1em; margin-bottom: 16px; }
+  .error-screen p  { color: #444; font-size: 12px; letter-spacing: 0.15em; line-height: 2; }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 10px;
+    color: #222;
+    letter-spacing: 0.2em;
+    border-top: 1px solid #111;
+    margin-top: 40px;
+  }
+  .footer a { color: #333; text-decoration: none; }
+  .footer a:hover { color: var(--gold-dim); }
+
+  /* ── INSTRUCCIONES STICKER ── */
+  .sticker-guide {
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    border-left: 3px solid var(--gold-dim);
+    padding: 16px;
+    font-size: 11px;
+    color: #555;
+    letter-spacing: 0.1em;
+    line-height: 2;
+    margin-top: 16px;
+  }
+  .sticker-guide strong { color: var(--gold-dim); }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand">C.R.O.M.A.D.H.</div>
+  <div class="status">
+    <span><span class="dot"></span>SISTEMA ACTIVO</span>
+    <span>PROTOCOLO ALETHEIA v7.2.1</span>
+    <span id="ts">──:──:──</span>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main" id="mainContent">
+
+  <!-- LOADING STATE -->
+  <div class="loading-screen" id="loadingScreen">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:48px;color:#D4AF37;letter-spacing:0.1em;">C.R.O.M.A.D.H.</div>
+    <div class="loading-text">> Autenticando nodo... Estableciendo canal seguro...</div>
+  </div>
+
+  <!-- ERROR STATE -->
+  <div class="error-screen" id="errorScreen">
+    <h2>// NODO NO ENCONTRADO</h2>
+    <p>El ID solicitado no existe en la red.<br>
+    Verificá el link o registrate como nuevo nodo.</p>
+    <br>
+    <a href="index.html" style="color:#D4AF37;font-size:11px;letter-spacing:0.2em;">→ VOLVER AL PROTOCOLO</a>
+  </div>
+
+  <!-- DASHBOARD (oculto hasta cargar datos) -->
+  <div id="dashboard" style="display:none">
+
+    <!-- HERO -->
+    <div class="node-hero">
+      <div class="node-id" id="heroNodeId">NODO-000</div>
+      <div class="node-codename" id="heroCodename">> NOMBRE DE CÓDIGO: ────────</div>
+      <div class="node-meta">
+        <div>TIPO: <span id="heroTipo">──────</span></div>
+        <div>REGISTRO: <span id="heroFecha">──────</span></div>
+        <div>PADRE: <span id="heroPadre">──────</span></div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="statHijos">0</div>
+        <div class="stat-label">Anomalías directas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="statDescendientes">0</div>
+        <div class="stat-label">Total en tu red</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="statGeneraciones">1</div>
+        <div class="stat-label">Generaciones</div>
+      </div>
+    </div>
+
+    <!-- QR PERSONAL -->
+    <div class="section">
+      <div class="section-header">TU QR PERSONAL — ESPARCIRLO ES EXPANDIR LA RED</div>
+      <div class="section-body">
+        <div class="qr-wrapper">
+          <div class="qr-box" id="qrContainer"></div>
+          <div class="qr-info">
+            <div class="qr-url">
+              <strong>>> URL DE REFERIDO</strong>
+              <span id="refUrl">Cargando...</span>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-gold" onclick="descargarQR()">⬇ DESCARGAR QR</button>
+              <button class="btn btn-green" onclick="copiarLink()">⎘ COPIAR LINK</button>
+              <button class="btn btn-outline" onclick="window.open(document.getElementById('refUrl').textContent)">↗ ABRIR</button>
+            </div>
+            <div class="copy-feedback" id="copyFeedback"></div>
+            <div class="sticker-guide">
+              <strong>// INSTRUCCIONES DE GUERRILLA</strong><br>
+              1. Descargá el QR y llevalo a una imprenta (vinilo autoadhesivo).<br>
+              2. Pegalo en facultades, cafés, paradas de colectivo, librerías.<br>
+              3. Cuando alguien escanea y se registra, pasa a ser parte de <strong>tu red</strong>.<br>
+              4. Ellos generarán su propio QR y expandirán la red desde tu nodo.<br>
+              <strong>El árbol crece de forma automática. Vos solo esparcís el código.</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÁRBOL DE ANOMALÍAS -->
+    <div class="section">
+      <div class="section-header">ÁRBOL DE ANOMALÍAS — TU RED DE NODOS</div>
+      <div class="section-body" id="treeContainer">
+        <div class="loading-text" style="font-size:11px;">> Cargando red...</div>
+      </div>
+    </div>
+
+    <!-- ACCIONES -->
+    <div class="section">
+      <div class="section-header">ACCIONES DEL NODO</div>
+      <div class="section-body">
+        <div class="btn-row">
+          <button class="btn btn-outline" onclick="window.location.href='index.html'">← VOLVER AL PROTOCOLO</button>
+          <button class="btn btn-outline" onclick="window.location.href='foro.html'">📡 IR AL FORO</button>
+          <button class="btn btn-outline" onclick="cerrarSesion()" style="border-color:#8B0000;color:#8B0000;">✕ CERRAR SESIÓN</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /dashboard -->
+
+</div><!-- /main -->
+
+<div class="footer">
+  <a href="index.html">C.R.O.M.A.D.H.</a> · RED DE NODOS v1.0 · PROTOCOLO ALETHEIA<br>
+  <span style="color:#111">La verdad es una anomalía.</span>
+</div>
+
+<!-- RELOJ -->
+<script>
+  function tick() {
+    const now = new Date();
+    document.getElementById('ts').textContent =
+      now.toTimeString().slice(0,8);
+  }
+  tick(); setInterval(tick, 1000);
+</script>
+
+<!-- SISTEMA PRINCIPAL -->
+<script type="module">
+
+import {
+  db, doc, getDoc, collection, query, where, getDocs
+} from './firebase-config.js';
+
+const BASE_URL = 'https://luisjmendoza2004-lang.github.io/protocolo-Aletheia';
+let myNodeId = null;
+let qrInstance = null;
+
+// ── INICIALIZAR ──────────────────────────────────────────────
+
+async function init() {
+  // Obtener ID desde URL o localStorage
+  const urlParams = new URLSearchParams(window.location.search);
+  const idFromUrl = urlParams.get('id');
+  const idFromStorage = localStorage.getItem('cromadh_my_node');
+
+  myNodeId = idFromUrl || idFromStorage;
+
+  if (!myNodeId) {
+    mostrarError();
+    return;
+  }
+
+  // Cargar datos del nodo
+  try {
+    const nodeSnap = await getDoc(doc(db, 'nodos', myNodeId));
+    if (!nodeSnap.exists()) {
+      mostrarError();
+      return;
+    }
+
+    const data = nodeSnap.data();
+    renderDashboard(data);
+    await cargarHijos();
+
+  } catch (err) {
+    console.error('[CROMADH]', err);
+    mostrarError();
+  }
+}
+
+// ── RENDER DASHBOARD ─────────────────────────────────────────
+
+function renderDashboard(data) {
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display     = 'block';
+
+  document.title = `${data.nodeId} — C.R.O.M.A.D.H.`;
+
+  document.getElementById('heroNodeId').textContent   = data.nodeId;
+  document.getElementById('heroCodename').textContent = `> NOMBRE DE CÓDIGO: ${data.codename || 'Anónimo'}`;
+  document.getElementById('heroTipo').textContent     = (data.tipo || 'observador').toUpperCase();
+  document.getElementById('heroPadre').textContent    = data.parentId || 'RAIZ';
+
+  // Fecha de registro
+  if (data.fechaRegistro && data.fechaRegistro.toDate) {
+    const fecha = data.fechaRegistro.toDate();
+    document.getElementById('heroFecha').textContent = fecha.toLocaleDateString('es-AR');
+  } else {
+    document.getElementById('heroFecha').textContent = '──';
+  }
+
+  // Stats
+  document.getElementById('statHijos').textContent         = data.totalHijos         || 0;
+  document.getElementById('statDescendientes').textContent = data.totalDescendientes  || 0;
+
+  // QR
+  const refUrl = `${BASE_URL}/index.html?ref=${data.nodeId}`;
+  document.getElementById('refUrl').textContent = refUrl;
+
+  const container = document.getElementById('qrContainer');
+  container.innerHTML = '';
+  qrInstance = new QRCode(container, {
+    text: refUrl,
+    width:  140,
+    height: 140,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+}
+
+// ── CARGAR HIJOS ─────────────────────────────────────────────
+
+async function cargarHijos() {
+  const treeEl = document.getElementById('treeContainer');
+
+  try {
+    const q     = query(collection(db, 'nodos'), where('parentId', '==', myNodeId));
+    const snaps = await getDocs(q);
+
+    if (snaps.empty) {
+      treeEl.innerHTML = `
+        <div class="tree-empty">
+          <strong>◉ RED VACÍA</strong>
+          Tu QR aún no generó anomalías.<br>
+          Esparcí el código en la vía pública.<br>
+          Cada escaneo que termina en registro<br>
+          aparecerá acá en tiempo real.
+        </div>`;
+      return;
+    }
+
+    // Actualizar stat de generaciones
+    document.getElementById('statGeneraciones').textContent = calcularGeneraciones(snaps.size);
+
+    const listEl = document.createElement('div');
+    listEl.className = 'children-list';
+
+    snaps.forEach(snap => {
+      const d = snap.data();
+      const item = document.createElement('div');
+      item.className = 'child-item';
+      item.innerHTML = `
+        <div>
+          <div class="child-id">${d.nodeId}</div>
+          <div class="child-codename">${d.codename || 'Anónimo'}</div>
+        </div>
+        <div class="child-tipo">${(d.tipo || 'observador').toUpperCase()}</div>
+        <div class="child-stats">
+          <strong>${d.totalHijos || 0}</strong>
+          anomalías propias
+        </div>`;
+      item.style.cursor = 'pointer';
+      item.title = 'Ver red de este nodo';
+      item.onclick = () => { window.open(`nodo.html?id=${d.nodeId}`, '_blank'); };
+      listEl.appendChild(item);
+    });
+
+    const header = document.createElement('div');
+    header.style.cssText = 'font-size:10px;color:#333;letter-spacing:0.2em;margin-bottom:12px;';
+    header.textContent = `> ${snaps.size} anomalía${snaps.size !== 1 ? 's' : ''} directa${snaps.size !== 1 ? 's' : ''} en tu red. Hacé click en cada nodo para ver su árbol.`;
+
+    treeEl.innerHTML = '';
+    treeEl.appendChild(header);
+    treeEl.appendChild(listEl);
+
+  } catch (err) {
+    treeEl.innerHTML = `<div style="color:#333;font-size:11px;letter-spacing:0.15em;">> Error cargando la red. Recargá la página.</div>`;
+    console.error('[CROMADH tree]', err);
+  }
+}
+
+function calcularGeneraciones(hijos) {
+  if (hijos === 0) return 1;
+  if (hijos < 5)  return 2;
+  if (hijos < 20) return 3;
+  return 4;
+}
+
+// ── ACCIONES ─────────────────────────────────────────────────
+
+window.descargarQR = function() {
+  const canvas = document.querySelector('#qrContainer canvas');
+  if (!canvas) { alert('Generá el QR primero'); return; }
+
+  // Crear canvas con fondo negro y branding
+  const final = document.createElement('canvas');
+  final.width  = 400;
+  final.height = 480;
+  const ctx = final.getContext('2d');
+
+  // Fondo negro
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, 400, 480);
+
+  // Borde dorado
+  ctx.strokeStyle = '#D4AF37';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(8, 8, 384, 464);
+
+  // Texto superior
+  ctx.fillStyle = '#D4AF37';
+  ctx.font = 'bold 32px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('C.R.O.M.A.D.H.', 200, 52);
+
+  ctx.fillStyle = '#8a720f';
+  ctx.font = '11px monospace';
+  ctx.fillText('¿SOS UNA ANOMALÍA ESTADÍSTICA?', 200, 76);
+
+  // QR en el centro
+  ctx.drawImage(canvas, 120, 92, 160, 160);
+
+  // Texto inferior
+  ctx.fillStyle = '#555555';
+  ctx.font = '11px monospace';
+  ctx.fillText('Descubrilo. Tomá el test.', 200, 290);
+
+  ctx.fillStyle = '#D4AF37';
+  ctx.font = 'bold 14px monospace';
+  ctx.fillText(myNodeId, 200, 340);
+
+  ctx.fillStyle = '#333333';
+  ctx.font = '9px monospace';
+  ctx.fillText('protocolo-aletheia · red de nodos', 200, 380);
+
+  // Línea decorativa
+  ctx.strokeStyle = '#1a1a1a';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(40, 320); ctx.lineTo(360, 320);
+  ctx.stroke();
+
+  // Descargar
+  const link = document.createElement('a');
+  link.download = `CROMADH-QR-${myNodeId}.png`;
+  link.href = final.toDataURL('image/png');
+  link.click();
+};
+
+window.copiarLink = function() {
+  const url = document.getElementById('refUrl').textContent;
+  navigator.clipboard.writeText(url).then(() => {
+    const fb = document.getElementById('copyFeedback');
+    fb.textContent = '> Link copiado al portapapeles. Compartilo.';
+    setTimeout(() => { fb.textContent = ''; }, 3000);
+  }).catch(() => {
+    // Fallback para móviles
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    document.getElementById('copyFeedback').textContent = '> Link copiado.';
+  });
+};
+
+window.cerrarSesion = function() {
+  if (confirm('¿Cerrar sesión? Recordá guardar tu ID de nodo: ' + myNodeId)) {
+    localStorage.removeItem('cromadh_my_node');
+    localStorage.removeItem('cromadh_ref');
+    window.location.href = 'index.html';
+  }
+};
+
+function mostrarError() {
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('errorScreen').style.display  = 'block';
+}
+
+// ── ARRANCAR ──────────────────────────────────────────────────
+init();
+
+</script>
+</body>
+</html>
