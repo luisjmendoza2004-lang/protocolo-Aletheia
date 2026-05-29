@@ -3,325 +3,672 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROTOCOLO ALETHEIA</title>
-    <link rel="stylesheet" href="style.css">
+    <title>PROTOCOLO ALETHEIA | Sistema Activo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0a0a;
+            color: #00ff41;
+            font-family: 'Courier New', monospace;
+            overflow-x: hidden;
+        }
+        .hidden { display: none !important; }
+        .section {
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .glitch {
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            animation: glitch 2s infinite;
+        }
+        @keyframes glitch {
+            0%, 100% { text-shadow: 2px 0 #ff0000, -2px 0 #00ffff; }
+            25% { text-shadow: -2px 0 #ff0000, 2px 0 #00ffff; }
+            50% { text-shadow: 2px 0 #00ffff, -2px 0 #ff0000; }
+        }
+        .btn {
+            background: transparent;
+            border: 2px solid #00ff41;
+            color: #00ff41;
+            padding: 1rem 2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 0.5rem;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .btn:hover {
+            background: #00ff41;
+            color: #0a0a0a;
+            box-shadow: 0 0 20px #00ff41;
+        }
+        .terminal {
+            background: #111;
+            border: 1px solid #333;
+            padding: 2rem;
+            max-width: 800px;
+            width: 100%;
+            margin: 1rem auto;
+            text-align: left;
+        }
+        .terminal-line {
+            margin: 0.5rem 0;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+        }
+        @keyframes fadeIn { to { opacity: 1; } }
+        .blink { animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        .manifesto { font-size: 1.1rem; line-height: 1.8; max-width: 700px; }
+        .manifesto strong { color: #fff; }
+        .price-card {
+            border: 1px solid #333;
+            padding: 2rem;
+            margin: 1rem;
+            min-width: 280px;
+            transition: all 0.3s;
+        }
+        .price-card:hover { border-color: #00ff41; box-shadow: 0 0 15px rgba(0,255,65,0.2); }
+        .price { font-size: 2rem; color: #fff; margin: 1rem 0; }
+        .recommended { border-color: #00ff41; position: relative; }
+        .recommended::before {
+            content: "RECOMENDADO";
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #00ff41;
+            color: #0a0a0a;
+            padding: 0.2rem 1rem;
+            font-size: 0.8rem;
+        }
+        input, select {
+            background: #111;
+            border: 1px solid #333;
+            color: #00ff41;
+            padding: 0.8rem;
+            font-family: 'Courier New', monospace;
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+        input:focus, select:focus { outline: none; border-color: #00ff41; }
+        .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .nav-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10,10,10,0.9);
+            border-bottom: 1px solid #333;
+            padding: 1rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .nav-bar .btn { padding: 0.5rem 1rem; font-size: 0.8rem; }
+        .progress-bar {
+            width: 100%;
+            height: 2px;
+            background: #333;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1001;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #00ff41;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .question { margin: 2rem 0; text-align: left; max-width: 600px; }
+        .question label { display: block; margin: 0.5rem 0; cursor: pointer; }
+        .question input[type="radio"] { width: auto; margin-right: 0.5rem; }
+        .stats { display: flex; justify-content: center; gap: 2rem; margin: 2rem 0; }
+        .stat { text-align: center; }
+        .stat-number { font-size: 2rem; color: #fff; }
+        .stat-label { font-size: 0.8rem; opacity: 0.7; }
+    </style>
+<base target="_blank">
 </head>
- <script>
-  window.navigate = function(dest) {
-    if (!dest) return;
-    if (dest.startsWith('http') || dest.startsWith('//')) { window.open(dest, '_blank'); return; }
-    if (dest.startsWith('#')) { const el = document.querySelector(dest); if (el) el.scrollIntoView({behavior:'smooth'}); return; }
-    const target = document.getElementById(dest) || document.querySelector('[data-section="'+dest+'"]'); 
-    if (target) { document.querySelectorAll('section').forEach(s=>s.style.display='none'); target.style.display='block'; target.scrollIntoView({behavior:'smooth'}); }
-    else { window.location.hash = dest; }
-  };
-</script>
-🛠️ PASO 4: Guarda y sube a GitHub
-bash
-git add index.html
-git commit -m "Fix: Agregar funcion navigate global"
-git push origin main
-⚠️ Si esto no funciona
-Entonces el problema es más profundo (probablemente los scripts están en type="module" y no exponen funciones globales). En ese caso, sí reconstruimos todo.
-¿Puedes intentar esto primero? Si falla, me dices y creo el kit completo nuevo.
-  
 <body>
-    <!-- Canvas para efecto Matrix -->
-    <canvas id="matrix-canvas"></canvas>
+    <!-- Barra de progreso -->
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
-    <!-- Efecto CRT -->
-    <div class="crt-overlay"></div>
-    <div class="scanlines"></div>
-
-    <!-- Barra de estado -->
-    <div class="status-bar">
-        <span class="blink">●</span> SISTEMA ACTIVO | PROTOCOLO ALETHEIA v7.2.1 | ENCRIPTACION: AES-256 | <span id="clock">00:00:00</span>
-    </div>
-
-    <!-- Navegacion -->
-    <nav class="terminal-nav">
-        <button onclick="navigate('home')" class="nav-btn active">[ INICIO ]</button>
-        <button onclick="navigate('manifesto')" class="nav-btn">[ MANIFIESTO ]</button>
-        <button onclick="navigate('cuestionario')" class="nav-btn">[ EVALUACION ]</button>
-        <button onclick="navigate('adquirir')" class="nav-btn">[ ADQUIRIR LIBRO ]</button>
-        <button onclick="navigate('newsletter')" class="nav-btn">[ SUSCRIBIRSE ]</button>
+    <!-- Navegación fija -->
+    <nav class="nav-bar">
+        <button class="btn" onclick="navigate('inicio')">INICIO</button>
+        <button class="btn" onclick="navigate('manifiesto')">MANIFIESTO</button>
+        <button class="btn" onclick="navigate('evaluacion')">EVALUACIÓN</button>
+        <button class="btn" onclick="navigate('adquirir')">ADQUIRIR</button>
+        <button class="btn" onclick="navigate('red')">RED</button>
+        <button class="btn" onclick="navigate('foro')">FORO</button>
     </nav>
 
-    <!-- Seccion: INICIO -->
-    <section id="home" class="section active">
-        <div class="terminal-box">
-            <div class="terminal-header">
-                <span>root@aletheia:~$</span>
-                <span class="window-controls">_ □ ×</span>
-            </div>
-            <div class="terminal-body">
-                <p class="typing-text">Inicializando modulo de reconocimiento neural...</p>
-                <p class="typing-text delay-1">> Conexion establecida mediante proxy anonimo</p>
-                <p class="typing-text delay-2">> Descifrando capas de encriptacion...</p>
-                <p class="typing-text delay-3 success">> ACCESO CONCEDIDO. Bienvenido, anomalia.</p>
-            </div>
+    <!-- SECCIÓN 1: INICIO -->
+    <section id="inicio" class="section">
+        <h1 class="glitch">PROTOCOLO ALETHEIA</h1>
+        <p>● SISTEMA ACTIVO | PROTOCOLO ALETHEIA v7.2.1 | ENCRIPTACION: AES-256 | <span id="timer">00:00:00</span></p>
+        <div class="terminal" style="margin-top: 2rem;">
+            <p class="terminal-line" style="animation-delay: 0.2s;">> Inicializando modulo de reconocimiento neural...</p>
+            <p class="terminal-line" style="animation-delay: 0.6s;">> Conexion establecida mediante proxy anonimo</p>
+            <p class="terminal-line" style="animation-delay: 1.0s;">> Descifrando capas de encriptacion...</p>
+            <p class="terminal-line" style="animation-delay: 1.4s; color: #fff;">> ACCESO CONCEDIDO. Bienvenido, anomalia.</p>
         </div>
-
-        <div class="content-block glitch-text" data-text="La mente es un laberinto con espejos. Solo puedes atravesarlo con la verdad.">
+        <p style="margin-top: 2rem; font-style: italic; max-width: 500px;">
             La mente es un laberinto con espejos. Solo puedes atravesarlo con la verdad.
+        </p>
+        <div style="margin-top: 2rem;">
+            <p>> Ingresa tu anomalia (opcional):</p>
+            <input type="text" id="anomaliaInput" placeholder="codigo_anomalia_001" style="max-width: 300px; margin-top: 0.5rem;">
         </div>
+        <button class="btn" onclick="navigate('manifiesto')" style="margin-top: 2rem;">> CONTINUAR <span class="blink">_</span></button>
+    </section>
 
-        <div class="anomaly-input">
-            <label for="anomaly">> Ingresa tu anomalia (opcional):</label>
-            <input type="text" id="anomaly" placeholder="Escribi tu anomalia aqui..." autocomplete="off">
-            <button onclick="registerAnomaly()" class="btn-glitch">[ REGISTRAR ]</button>
+    <!-- SECCIÓN 2: MANIFIESTO -->
+    <section id="manifiesto" class="section hidden">
+        <h2 class="glitch" style="font-size: 1.8rem;">MANIFIESTO C.R.O.M.A.D.H.</h2>
+        <div class="manifesto terminal">
+            <p style="font-size: 2rem; color: #fff; text-align: center; margin-bottom: 2rem;">0,0003%</p>
+            <p>de la humanidad controla mas recursos que <strong>4 mil millones</strong> de personas combinadas.</p>
+            <p style="margin-top: 1rem;">Eso no es desigualdad. Es una <strong>deformacion estructural</strong>. Una obscenidad politica, economica, psicologica y espiritual.</p>
+            <p style="margin-top: 1rem;">Ese <strong>0,0003%</strong> son los <strong>Arquitectos del Silencio</strong>. Poseen las inteligencias artificiales que administran las emociones de las masas. Algoritmos que fabrican conformidad, miedo, confusion. No predicen comportamientos: los <strong>diseñan</strong>.</p>
+            <p style="margin-top: 1rem;"><strong>C.R.O.M.A.D.H.</strong> basa su lucha en el <em>limitarianismo</em>. Hay que combatir la riqueza extrema con la misma intensidad con la que se combate la pobreza. La opulencia desmedida es un arma contra la dignidad humana.</p>
+            <p style="margin-top: 1rem;">> Los personajes que descubris en sus paginas —Cesar, Clara, Lorenzo, Alexander, Julieta— son nodos de un campo que no usa cables ni satelites. Una <strong>red de conciencia</strong>.</p>
+            <p style="margin-top: 1rem;">> Ahora, escaneando este codigo, vos tambien sos parte de ese campo. No como lector pasivo. Como <strong>anomalia estadistica</strong> que el sistema no habia previsto.</p>
+        </div>
+        <button class="btn" onclick="navigate('evaluacion')" style="margin-top: 2rem;">> EVALUAR COHERENCIA <span class="blink">_</span></button>
+    </section>
+
+    <!-- SECCIÓN 3: EVALUACIÓN -->
+    <section id="evaluacion" class="section hidden">
+        <h2 class="glitch" style="font-size: 1.8rem;">EVALUACION DE COHERENCIA NEURAL</h2>
+        <p style="margin-bottom: 2rem;">Pregunta <span id="qNum">1</span> de 5</p>
+        <div id="quizContainer" class="terminal" style="max-width: 600px;">
+            <div class="question" id="q1">
+                <p><strong>1. ¿Que es para vos la verdad?</strong></p>
+                <label><input type="radio" name="q1" value="a"> a) Lo que los datos confirman</label>
+                <label><input type="radio" name="q1" value="b"> b) Lo que el cuerpo siente antes de pensar</label>
+                <label><input type="radio" name="q1" value="c"> c) Lo que el sistema permite decir</label>
+                <label><input type="radio" name="q1" value="d"> d) Una construcción colectiva</label>
+            </div>
+            <div class="question hidden" id="q2">
+                <p><strong>2. El limitarianismo propone...</strong></p>
+                <label><input type="radio" name="q2" value="a"> a) Igualar a todos en la pobreza</label>
+                <label><input type="radio" name="q2" value="b"> b) Limitar la riqueza extrema como se limita la pobreza</label>
+                <label><input type="radio" name="q2" value="c"> c) Aumentar los impuestos</label>
+                <label><input type="radio" name="q2" value="d"> d) Eliminar el dinero</label>
+            </div>
+            <div class="question hidden" id="q3">
+                <p><strong>3. Los Arquitectos del Silencio...</strong></p>
+                <label><input type="radio" name="q3" value="a"> a) Son una conspiración ficticia</label>
+                <label><input type="radio" name="q3" value="b"> b) Controlan los algoritmos que administran emociones</label>
+                <label><input type="radio" name="q3" value="c"> c) Son los gobiernos democraticos</label>
+                <label><input type="radio" name="q3" value="d"> d) No existen en el texto</label>
+            </div>
+            <div class="question hidden" id="q4">
+                <p><strong>4. C.R.O.M.A.D.H. es...</strong></p>
+                <label><input type="radio" name="q4" value="a"> a) Una organización terrorista</label>
+                <label><input type="radio" name="q4" value="b"> b) Una red de conciencia clandestina</label>
+                <label><input type="radio" name="q4" value="c"> c) Un partido político</label>
+                <label><input type="radio" name="q4" value="d"> d) Una empresa tecnológica</label>
+            </div>
+            <div class="question hidden" id="q5">
+                <p><strong>5. Tu rol como lector es...</strong></p>
+                <label><input type="radio" name="q5" value="a"> a) Consumir contenido pasivamente</label>
+                <label><input type="radio" name="q5" value="b"> b) Ser una anomalia que el sistema no previó</label>
+                <label><input type="radio" name="q5" value="c"> c) Compartir en redes sociales</label>
+                <label><input type="radio" name="q5" value="d"> d) Ignorar y seguir tu vida</label>
+            </div>
+        </div>
+        <div style="margin-top: 2rem;">
+            <button class="btn" onclick="prevQuestion()" id="prevBtn" style="display:none;">< ANTERIOR</button>
+            <button class="btn" onclick="nextQuestion()" id="nextBtn">SIGUIENTE ></button>
+            <button class="btn hidden" onclick="showResults()" id="resultBtn">VER RESULTADOS</button>
+        </div>
+        <div id="results" class="terminal hidden" style="margin-top: 2rem;">
+            <h3 style="color: #fff; margin-bottom: 1rem;">RESULTADO DE COHERENCIA</h3>
+            <p id="resultText"></p>
+            <button class="btn" onclick="navigate('adquirir')" style="margin-top: 1rem;">> ADQUIRIR LIBRO <span class="blink">_</span></button>
         </div>
     </section>
 
-    <!-- Seccion: MANIFIESTO -->
-    <section id="manifesto" class="section">
-        <h1 class="section-title glitch-text" data-text="MANIFIESTO C.R.O.M.A.D.H.">MANIFIESTO C.R.O.M.A.D.H.</h1>
-
-        <div class="data-block">
-            <div class="stat-highlight">
-                <span class="big-number">0,0003%</span>
-                <p>de la humanidad controla mas recursos que <strong>4 mil millones</strong> de personas combinadas.</p>
-            </div>
-
-            <p class="warning-text">Eso no es desigualdad. Es una deformacion estructural. Una obscenidad politica, economica, psicologica y espiritual.</p>
-
-            <p>Ese <strong>0,0003%</strong> son los <strong class="highlight">Arquitectos del Silencio</strong>. Poseen las inteligencias artificiales que administran las emociones de las masas. Algoritmos que fabrican conformidad, miedo, confusion. No predicen comportamientos: los disenan.</p>
-
-            <p><strong>C.R.O.M.A.D.H.</strong> basa su lucha en el <em>limitarianismo</em>. Hay que combatir la riqueza extrema con la misma intensidad con la que se combate la pobreza. La opulencia desmedida es un arma contra la dignidad humana.</p>
-
-            <div class="terminal-quote">
-                <p>> Los personajes que descubris en sus paginas —Cesar, Clara, Lorenzo, Alexander, Julieta— son nodos de un campo que no usa cables ni satelites. Una red de conciencia.</p>
-                <p>> Ahora, escaneando este codigo, vos tambien sos parte de ese campo. No como lector pasivo. Como <strong>anomalia estadistica</strong> que el sistema no habia previsto.</p>
-            </div>
+    <!-- SECCIÓN 4: ADQUIRIR -->
+    <section id="adquirir" class="section hidden">
+        <h2 class="glitch" style="font-size: 1.8rem;">ADQUISICION CLANDESTINA</h2>
+        <div style="margin: 1rem 0;">
+            <h3 style="color: #fff;">C.R.O.M.A.D.H.</h3>
+            <p style="font-style: italic;">Mas alla del ultimo dia</p>
+            <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 0.5rem;">CLASIFICADO</p>
         </div>
-    </section>
-
-    <!-- Seccion: CUESTIONARIO -->
-    <section id="cuestionario" class="section">
-        <h1 class="section-title glitch-text" data-text="EVALUACION DE COHERENCIA NEURAL">EVALUACION DE COHERENCIA NEURAL</h1>
-
-        <div class="progress-bar">
-            <div class="progress-fill" id="progress-fill"></div>
-            <span id="progress-text">Pregunta 1 de 5</span>
-        </div>
-
-        <form id="quiz-form" onsubmit="return false;">
-            <div class="question active" data-q="1">
-                <h3>[ 1/5 ] Que es para vos la verdad en un sistema que fabrica realidades?</h3>
-                <div class="options">
-                    <label class="option-card"><input type="radio" name="q1" value="a"><span>Una herramienta de control</span></label>
-                    <label class="option-card"><input type="radio" name="q1" value="b"><span>Una resistencia silenciosa</span></label>
-                    <label class="option-card"><input type="radio" name="q1" value="c"><span>Una ilusion colectiva</span></label>
-                    <label class="option-card"><input type="radio" name="q1" value="d"><span>Una anomalia estadistica</span></label>
-                </div>
-            </div>
-
-            <div class="question" data-q="2">
-                <h3>[ 2/5 ] El limitarianismo propone:</h3>
-                <div class="options">
-                    <label class="option-card"><input type="radio" name="q2" value="a"><span>Igualar a todos por abajo</span></label>
-                    <label class="option-card"><input type="radio" name="q2" value="b"><span>Combatir la riqueza extrema como se combate la pobreza</span></label>
-                    <label class="option-card"><input type="radio" name="q2" value="c"><span>Establecer un salario universal</span></label>
-                    <label class="option-card"><input type="radio" name="q2" value="d"><span>Abolir toda forma de propiedad</span></label>
-                </div>
-            </div>
-
-            <div class="question" data-q="3">
-                <h3>[ 3/5 ] Los Arquitectos del Silencio controlan:</h3>
-                <div class="options">
-                    <label class="option-card"><input type="radio" name="q3" value="a"><span>Los medios de comunicacion tradicionales</span></label>
-                    <label class="option-card"><input type="radio" name="q3" value="b"><span>Los algoritmos que disenan emociones</span></label>
-                    <label class="option-card"><input type="radio" name="q3" value="c"><span>Los gobiernos democraticos</span></label>
-                    <label class="option-card"><input type="radio" name="q3" value="d"><span>Todas las respuestas anteriores</span></label>
-                </div>
-            </div>
-
-            <div class="question" data-q="4">
-                <h3>[ 4/5 ] C.R.O.M.A.D.H. es:</h3>
-                <div class="options">
-                    <label class="option-card"><input type="radio" name="q4" value="a"><span>Una organizacion terrorista</span></label>
-                    <label class="option-card"><input type="radio" name="q4" value="b"><span>Una red de conciencia sin cables ni satelites</span></label>
-                    <label class="option-card"><input type="radio" name="q4" value="c"><span>Un partido politico</span></label>
-                    <label class="option-card"><input type="radio" name="q4" value="d"><span>Una corporacion tecnologica</span></label>
-                </div>
-            </div>
-
-            <div class="question" data-q="5">
-                <h3>[ 5/5 ] Tu anomalia es:</h3>
-                <div class="options">
-                    <label class="option-card"><input type="radio" name="q5" value="a"><span>Un error del sistema</span></label>
-                    <label class="option-card"><input type="radio" name="q5" value="b"><span>Una posibilidad de cambio</span></label>
-                    <label class="option-card"><input type="radio" name="q5" value="c"><span>Una amenaza para el orden</span></label>
-                    <label class="option-card"><input type="radio" name="q5" value="d"><span>Todas las anteriores</span></label>
-                </div>
-            </div>
-
-            <div class="nav-buttons">
-                <button type="button" id="prev-btn" onclick="changeQuestion(-1)" class="btn-glitch" disabled>[ ANTERIOR ]</button>
-                <button type="button" id="next-btn" onclick="changeQuestion(1)" class="btn-glitch">[ SIGUIENTE ]</button>
-                <button type="button" id="submit-btn" onclick="calculateResult()" class="btn-glitch hidden">[ VER RESULTADO ]</button>
-            </div>
-        </form>
-
-        <div id="result-panel" class="result-panel hidden">
-            <h2 class="glitch-text" id="result-title"></h2>
-            <p id="result-desc"></p>
-            <div class="coherence-meter"><div class="meter-fill" id="meter-fill"></div></div>
-            <p class="result-code" id="result-code"></p>
-            <button onclick="navigate('adquirir')" class="btn-glitch pulse">[ ACCEDER AL LIBRO COMPLETO ]</button>
-        </div>
-    </section>
-
-    <!-- Seccion: ADQUIRIR -->
-    <section id="adquirir" class="section">
-        <h1 class="section-title glitch-text" data-text="ADQUISICION CLANDESTINA">ADQUISICION CLANDESTINA</h1>
-
-        <div class="book-showcase">
-            <div class="book-cover">
-                <div class="book-spine"></div>
-                <div class="book-front">
-                    <h2>C.R.O.M.A.D.H.</h2>
-                    <p class="subtitle">Mas alla del ultimo dia</p>
-                    <div class="classified-stamp">CLASIFICADO</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="purchase-options">
-            <div class="purchase-card">
+        <div class="grid" style="margin-top: 2rem;">
+            <div class="price-card">
                 <h3>[ EDICION DIGITAL ]</h3>
                 <p class="price">$4.99 USD</p>
-                <ul>
+                <ul style="text-align: left; list-style: none; margin: 1rem 0;">
                     <li>> PDF encriptado</li>
                     <li>> Acceso a capitulos extra</li>
                     <li>> Codigo de anomalia personalizado</li>
                 </ul>
-                <a href="https://mpago.la/1BYDmb2" class="btn-glitch btn-buy" target="_blank">[ COMPRAR DIGITAL ]</a>
+                <button class="btn" onclick="window.open('https://mpago.la/1BYDmb2', '_blank')">[ COMPRAR DIGITAL ]</button>
             </div>
-
-            <div class="purchase-card featured">
-                <div class="badge">RECOMENDADO</div>
+            <div class="price-card recommended">
                 <h3>[ EDICION FISICA ]</h3>
                 <p class="price">$12.99 USD</p>
-                <ul>
+                <ul style="text-align: left; list-style: none; margin: 1rem 0;">
                     <li>> Libro impreso + envio</li>
                     <li>> Mapa de la red C.R.O.M.A.D.H.</li>
                     <li>> Tarjeta de anomalia holografica</li>
                     <li>> Acceso digital incluido</li>
                 </ul>
-                <a href="https://mpago.la/1GCwXij" class="btn-glitch btn-buy pulse" target="_blank">[ COMPRAR FISICO ]</a>
+                <button class="btn" onclick="window.open('https://mpago.la/169zmAM', '_blank')">[ COMPRAR FISICO ]</button>
             </div>
-
-            <div class="purchase-card">
+            <div class="price-card">
                 <h3>[ EDICION COLECTIVA ]</h3>
                 <p class="price">$24.99 USD</p>
-                <ul>
+                <ul style="text-align: left; list-style: none; margin: 1rem 0;">
                     <li>> 3 ejemplares fisicos</li>
                     <li>> Kit de inicio para celulas</li>
                     <li>> Guia de lectura critica</li>
                 </ul>
-                <a href="https://mpago.la/169zmAM" class="btn-glitch btn-buy" target="_blank">[ COMPRAR COLECTIVO ]</a>
+                <button class="btn" onclick="window.open('https://mpago.la/169zmAM', '_blank')">[ COMPRAR COLECTIVO ]</button>
             </div>
         </div>
-<button onclick="window.location.href='foro.html'" class="nav-btn">[ RED DE NODOS ]</button>
-        <div class="warning-box">
-            <p class="blink">ATENCION</p>
-            <p>Esta transaccion queda registrada como compra de material educativo. El sistema no debe saber que estas leyendo esto.</p>
-        </div>
+        <p style="margin-top: 2rem; font-size: 0.8rem; color: #ff4444;">
+            ATENCION<br>
+            Esta transaccion queda registrada como compra de material educativo. El sistema no debe saber que estas leyendo esto.
+        </p>
+        <button class="btn" onclick="navigate('red')" style="margin-top: 2rem;">> UNIRSE A LA RED <span class="blink">_</span></button>
     </section>
 
-    <!-- Seccion: NEWSLETTER -->
-    <section id="newsletter" class="section">
-        <h1 class="section-title glitch-text" data-text="RED DE CONCIENCIA CLANDESTINA">RED DE CONCIENCIA CLANDESTINA</h1>
-
-        <div class="terminal-box">
-            <div class="terminal-header">
-                <span>root@aletheia:~$ ./subscribe.sh</span>
-                <span class="window-controls">_ □ ×</span>
-            </div>
-            <div class="terminal-body">
-                <p class="typing-text">> Inicializando canal seguro de comunicacion...</p>
-                <p class="typing-text delay-1">> Encriptacion: AES-256-GCM</p>
-                <p class="typing-text delay-2">> Proxy: activo</p>
-                <p class="typing-text delay-3 success">> Canal establecido. Listo para recibir transmisiones.</p>
-            </div>
+    <!-- SECCIÓN 5: RED -->
+    <section id="red" class="section hidden">
+        <h2 class="glitch" style="font-size: 1.8rem;">RED DE CONCIENCIA CLANDESTINA</h2>
+        <div class="terminal" style="max-width: 700px;">
+            <p class="terminal-line" style="animation-delay: 0.2s;">> Inicializando canal seguro de comunicacion...</p>
+            <p class="terminal-line" style="animation-delay: 0.4s;">> Encriptacion: AES-256-GCM</p>
+            <p class="terminal-line" style="animation-delay: 0.6s;">> Proxy: activo</p>
+            <p class="terminal-line" style="animation-delay: 0.8s; color: #fff;">> Canal establecido. Listo para recibir transmisiones.</p>
         </div>
-
-        <div class="newsletter-content">
-            <div class="content-block">
-                <h3 class="glitch-text" data-text=">> QUE RECIBIRAS">>> QUE RECIBIRAS</h3>
-                <ul class="feature-list">
-                    <li>> <strong>Comunicados C.R.O.M.A.D.H.</strong> — Alertas sobre nuevas deformaciones del sistema</li>
-                    <li>> <strong>Capitulos en exclusiva</strong> — Material no publicado del universo Aletheia</li>
-                    <li>> <strong>Codigos de acceso</strong> — Llaves para desbloquear contenido clasificado</li>
-                    <li>> <strong>Coordenadas de celulas</strong> — Conexion con otras anomalias en tu region</li>
-                    <li>> <strong>Informes de inteligencia</strong> — Analisis de los Arquitectos del Silencio</li>
-                </ul>
+        <div style="margin: 2rem 0; max-width: 600px; text-align: left;">
+            <h3 style="color: #fff; margin-bottom: 1rem;">>> QUE RECIBIRAS</h3>
+            <ul style="list-style: none;">
+                <li style="margin: 0.5rem 0;">> <strong>Comunicados C.R.O.M.A.D.H.</strong> — Alertas sobre nuevas deformaciones del sistema</li>
+                <li style="margin: 0.5rem 0;">> <strong>Capitulos en exclusiva</strong> — Material no publicado del universo Aletheia</li>
+                <li style="margin: 0.5rem 0;">> <strong>Codigos de acceso</strong> — Llaves para desbloquear contenido clasificado</li>
+                <li style="margin: 0.5rem 0;">> <strong>Coordenadas de celulas</strong> — Conexion con otras anomalias en tu region</li>
+                <li style="margin: 0.5rem 0;">> <strong>Informes de inteligencia</strong> — Analisis de los Arquitectos del Silencio</li>
+            </ul>
+        </div>
+        <div class="terminal" style="max-width: 500px; margin-top: 2rem;">
+            <h3 style="color: #fff; margin-bottom: 1rem;">>> REGISTRO DE NODO</h3>
+            <p>> Nombre de codigo (opcional):</p>
+            <input type="text" id="nodeName" placeholder="anomalia_42">
+            <p style="margin-top: 1rem;">> Direccion segura (email): *</p>
+            <input type="email" id="nodeEmail" placeholder="tu@email.com" required>
+            <p style="margin-top: 1rem;">> Tipo de nodo:</p>
+            <select id="nodeType">
+                <option value="observador">Observador</option>
+                <option value="difusor">Difusor</option>
+                <option value="celula">Celula</option>
+                <option value="arquitecto">Arquitecto</option>
+            </select>
+            <label style="display: flex; align-items: center; margin-top: 1rem; font-size: 0.9rem;">
+                <input type="checkbox" id="nodeConfirm" style="width: auto; margin-right: 0.5rem;">
+                Confirmo que entiendo los riesgos. El sistema puede intentar rastrear esta comunicacion.
+            </label>
+            <button class="btn" onclick="registerNode()" style="margin-top: 1rem; width: 100%;">[ REGISTRAR NODO ]</button>
+        </div>
+        <div class="stats" style="margin-top: 3rem;">
+            <div class="stat">
+                <p class="stat-number" id="statNodes">0</p>
+                <p class="stat-label">Nodos activos</p>
             </div>
-
-            <div class="warning-text">
-                > ATENCION: Esta comunicacion no usa servidores corporativos. Los datos viajan por nodos descentralizados. Tu direccion queda registrada como un hash irreversible.
+            <div class="stat">
+                <p class="stat-number">AES-256</p>
+                <p class="stat-label">Encriptacion</p>
             </div>
-
-            <div class="subscribe-form">
-                <h3 class="glitch-text" data-text=">> REGISTRO DE NODO">>> REGISTRO DE NODO</h3>
-
-                <div class="form-group">
-                    <label for="subscriber-name">> Nombre de codigo (opcional):</label>
-                    <input type="text" id="subscriber-name" placeholder="Ej: Anomalia-7X9" autocomplete="off">
-                </div>
-
-                <div class="form-group">
-                    <label for="subscriber-email">> Direccion segura (email): <span class="required">*</span></label>
-                    <input type="email" id="subscriber-email" placeholder="tu-email@dominio.com" required autocomplete="off">
-                </div>
-
-                <div class="form-group">
-                    <label for="subscriber-type">> Tipo de nodo:</label>
-                    <select id="subscriber-type">
-                        <option value="observador">Observador (recibe alertas)</option>
-                        <option value="activista">Activista (participa en acciones)</option>
-                        <option value="difusor">Difusor (comparte material)</option>
-                        <option value="arquitecto">Arquitecto (desarrolla protocolos)</option>
-                    </select>
-                </div>
-
-                <div class="form-group checkbox-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="terms-check">
-                        <span>Confirmo que entiendo los riesgos. El sistema puede intentar rastrear esta comunicacion.</span>
-                    </label>
-                </div>
-
-                <button onclick="subscribeNewsletter()" class="btn-glitch pulse">[ ACTIVAR NODO ]</button>
-
-                <div id="subscribe-result" class="subscribe-result hidden"></div>
-            </div>
-
-            <div class="stats-panel">
-                <div class="stat-box">
-                    <span class="stat-number" id="subscriber-count">0</span>
-                    <span class="stat-label">Nodos activos</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-number">AES-256</span>
-                    <span class="stat-label">Encriptacion</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-number">INFINITO</span>
-                    <span class="stat-label">Anonimato</span>
-                </div>
+            <div class="stat">
+                <p class="stat-number">INFINITO</p>
+                <p class="stat-label">Anonimato</p>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer>
-        <p>Protocolo Aletheia v7.2.1 — Sistema de Evaluacion de Coherencia Neural</p>
-        <p class="small">C.R.O.M.A.D.H. vigila. La verdad es una anomalia.</p>
-    </footer>
+    
+    <!-- SECCIÓN 6: FORO -->
+    <section id="foro" class="section hidden">
+        <h2 class="glitch" style="font-size: 1.8rem;">FORO CLANDESTINO</h2>
+        <p style="margin-bottom: 2rem; opacity: 0.7;">Canal seguro de comunicación entre anomalías</p>
 
-    <script type="module" src="cromadh-patch.js"></script>
+        <div class="terminal" style="max-width: 800px; width: 100%;">
+            <h3 style="color: #fff; margin-bottom: 1rem;">> NUEVA TRANSMISIÓN</h3>
+            <input type="text" id="forumAlias" placeholder="Alias (opcional)" style="margin-bottom: 0.5rem;">
+            <textarea id="forumMessage" placeholder="Escribe tu mensaje... El sistema no debe saber que estás aquí." rows="4" style="width: 100%; background: #111; border: 1px solid #333; color: #00ff41; padding: 0.8rem; font-family: 'Courier New', monospace; resize: vertical;"></textarea>
+            <button class="btn" onclick="postMessage()" style="margin-top: 1rem; width: 100%;">[ TRANSMITIR ]</button>
+        </div>
+
+        <div id="forumPosts" style="margin-top: 2rem; max-width: 800px; width: 100%;">
+            <h3 style="color: #fff; margin-bottom: 1rem;">> TRANSMISIONES RECIENTES</h3>
+            <div id="postsContainer" style="max-height: 500px; overflow-y: auto;">
+                <p style="opacity: 0.5; text-align: center; padding: 2rem;">> Cargando transmisiones desde nodos descentralizados...</p>
+            </div>
+        </div>
+
+        <button class="btn" onclick="navigate('inicio')" style="margin-top: 2rem;">> VOLVER AL INICIO <span class="blink">_</span></button>
+    </section>
+
+    
+    <!-- FIREBASE CONFIG -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDFz_kyVCj1msSjhg8OZzuMT984C7UQeCM",
+            authDomain: "protocolo-aletheia-foro.firebaseapp.com",
+            projectId: "protocolo-aletheia-foro",
+            storageBucket: "protocolo-aletheia-foro.firebasestorage.app",
+            messagingSenderId: "538621416864",
+            appId: "1:538621416864:web:d9b2dca79182332de080c5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Hacer db global para las funciones del foro
+        window.db = db;
+
+        // Inicializar listener de posts
+        const postsQuery = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+        onSnapshot(postsQuery, (snapshot) => {
+            const container = document.getElementById('postsContainer');
+            if (!container) return;
+
+            if (snapshot.empty) {
+                container.innerHTML = '<p style="opacity: 0.5; text-align: center; padding: 2rem;">> No hay transmisiones. Sé el primero en romper el silencio.</p>';
+                return;
+            }
+
+            let html = '';
+            snapshot.forEach((doc) => {
+                const post = doc.data();
+                const date = post.timestamp ? new Date(post.timestamp.toDate()).toLocaleString('es-AR') : 'FECHA DESCONOCIDA';
+                const alias = post.alias || 'Anomalia_' + Math.floor(Math.random() * 9999);
+
+                html += `
+                    <div style="border: 1px solid #333; padding: 1rem; margin: 0.5rem 0; text-align: left; background: #0a0a0a;">
+                        <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.5rem;">> ${alias} | ${date}</p>
+                        <p style="color: #fff;">${escapeHtml(post.message || '')}</p>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        });
+
+        console.log('✅ Firebase conectado: protocolo-aletheia-foro');
+    </script>
+
+    <!-- SCRIPTS -->
+    <script>
+        // ═══════════════════════════════════════════════════════
+        // SISTEMA DE NAVEGACIÓN — SOLUCIÓN DEFINITIVA
+        // ═══════════════════════════════════════════════════════
+
+        function navigate(destination) {
+            if (!destination) return;
+
+            console.log('🧭 Navegando a:', destination);
+
+            // Si es URL externa
+            if (destination.startsWith('http') || destination.startsWith('//') || destination.startsWith('mailto:')) {
+                window.open(destination, '_blank');
+                return;
+            }
+
+            // Si es ancla
+            if (destination.startsWith('#')) {
+                const el = document.querySelector(destination);
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+                return;
+            }
+
+            // Navegación interna SPA
+            const sections = document.querySelectorAll('section');
+            sections.forEach(sec => sec.classList.add('hidden'));
+
+            const target = document.getElementById(destination);
+            if (target) {
+                target.classList.remove('hidden');
+                target.scrollIntoView({ behavior: 'smooth' });
+                window.location.hash = destination;
+                updateProgress();
+            } else {
+                console.warn('⚠️ Sección no encontrada:', destination);
+            }
+        }
+
+        // Hacer global explícitamente (por si acaso)
+        window.navigate = navigate;
+
+        // ═══════════════════════════════════════════════════════
+        // SISTEMA DE QUIZ
+        // ═══════════════════════════════════════════════════════
+
+        let currentQuestion = 1;
+        const totalQuestions = 5;
+        const answers = {};
+
+        function nextQuestion() {
+            const currentQ = document.getElementById('q' + currentQuestion);
+            const selected = document.querySelector('input[name="q' + currentQuestion + '"]:checked');
+
+            if (!selected) {
+                alert('Selecciona una respuesta, anomalia.');
+                return;
+            }
+
+            answers['q' + currentQuestion] = selected.value;
+            currentQ.classList.add('hidden');
+            currentQuestion++;
+
+            if (currentQuestion <= totalQuestions) {
+                document.getElementById('q' + currentQuestion).classList.remove('hidden');
+                document.getElementById('qNum').textContent = currentQuestion;
+                document.getElementById('prevBtn').style.display = 'inline-block';
+            }
+
+            if (currentQuestion === totalQuestions) {
+                document.getElementById('nextBtn').classList.add('hidden');
+                document.getElementById('resultBtn').classList.remove('hidden');
+            }
+
+            updateProgress();
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 1) {
+                document.getElementById('q' + currentQuestion).classList.add('hidden');
+                currentQuestion--;
+                document.getElementById('q' + currentQuestion).classList.remove('hidden');
+                document.getElementById('qNum').textContent = currentQuestion;
+
+                if (currentQuestion === 1) {
+                    document.getElementById('prevBtn').style.display = 'none';
+                }
+
+                document.getElementById('nextBtn').classList.remove('hidden');
+                document.getElementById('resultBtn').classList.add('hidden');
+            }
+        }
+
+        function showResults() {
+            const selected = document.querySelector('input[name="q' + currentQuestion + '"]:checked');
+            if (selected) answers['q' + currentQuestion] = selected.value;
+
+            let score = 0;
+            const correctAnswers = { q1: 'b', q2: 'b', q3: 'b', q4: 'b', q5: 'b' };
+
+            for (let key in correctAnswers) {
+                if (answers[key] === correctAnswers[key]) score++;
+            }
+
+            const percentage = (score / totalQuestions) * 100;
+            let message = '';
+
+            if (percentage === 100) {
+                message = 'COHERENCIA TOTAL. Eres una anomalia de clase A. El sistema te teme.';
+            } else if (percentage >= 80) {
+                message = 'ALTA COHERENCIA. Tu conciencia esta despertando. Continua el camino.';
+            } else if (percentage >= 60) {
+                message = 'COHERENCIA MODERADA. Hay ruido en tu señal. Lee de nuevo el manifiesto.';
+            } else {
+                message = 'COHERENCIA BAJA. El sistema aun te controla. Despierta, anomalia.';
+            }
+
+            document.getElementById('resultText').innerHTML = 
+                '<p style="font-size: 2rem; color: #fff;">' + percentage + '%</p>' +
+                '<p style="margin-top: 1rem;">' + message + '</p>';
+
+            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('quizContainer').classList.add('hidden');
+            document.getElementById('prevBtn').style.display = 'none';
+            document.getElementById('resultBtn').classList.add('hidden');
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // SISTEMA DE REGISTRO DE NODOS
+        // ═══════════════════════════════════════════════════════
+
+        function registerNode() {
+            const name = document.getElementById('nodeName').value || 'Anomalia_' + Math.floor(Math.random() * 10000);
+            const email = document.getElementById('nodeEmail').value;
+            const type = document.getElementById('nodeType').value;
+            const confirm = document.getElementById('nodeConfirm').checked;
+
+            if (!email) {
+                alert('La direccion segura es obligatoria, anomalia.');
+                return;
+            }
+
+            if (!confirm) {
+                alert('Debes confirmar que entiendes los riesgos.');
+                return;
+            }
+
+            // Guardar en localStorage (simulación)
+            const nodes = JSON.parse(localStorage.getItem('aletheia_nodes') || '[]');
+            nodes.push({ name, email, type, date: new Date().toISOString() });
+            localStorage.setItem('aletheia_nodes', JSON.stringify(nodes));
+
+            // Actualizar contador
+            document.getElementById('statNodes').textContent = nodes.length;
+
+            alert('Nodo registrado: ' + name + '\nTipo: ' + type + '\n\nBienvenido a la red, anomalia.');
+
+            // Limpiar formulario
+            document.getElementById('nodeName').value = '';
+            document.getElementById('nodeEmail').value = '';
+            document.getElementById('nodeConfirm').checked = false;
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // UTILIDADES
+        // ═══════════════════════════════════════════════════════
+
+        function updateProgress() {
+            const sections = document.querySelectorAll('section');
+            const visible = Array.from(sections).filter(s => !s.classList.contains('hidden'));
+            const progress = (visible.length / sections.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function updateTimer() {
+            const now = new Date();
+            const time = now.toTimeString().split(' ')[0];
+            document.getElementById('timer').textContent = time;
+        }
+
+        
+        // ═══════════════════════════════════════════════════════
+        // SISTEMA DE FORO
+        // ═══════════════════════════════════════════════════════
+
+        async function postMessage() {
+            const alias = document.getElementById('forumAlias').value || 'Anomalia_' + Math.floor(Math.random() * 9999);
+            const message = document.getElementById('forumMessage').value.trim();
+
+            if (!message) {
+                alert('Escribe un mensaje antes de transmitir, anomalia.');
+                return;
+            }
+
+            if (!window.db) {
+                alert('El canal seguro no está conectado. Intenta de nuevo.');
+                return;
+            }
+
+            try {
+                const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js");
+
+                await addDoc(collection(window.db, "posts"), {
+                    alias: alias,
+                    message: message,
+                    timestamp: serverTimestamp()
+                });
+
+                document.getElementById('forumMessage').value = '';
+                document.getElementById('forumAlias').value = '';
+
+                alert('Transmisión enviada. El sistema no puede rastrearla.');
+            } catch (error) {
+                console.error('Error al transmitir:', error);
+                alert('Error en la transmisión. El sistema puede estar interceptando.');
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Hacer funciones globales
+        window.postMessage = postMessage;
+        window.escapeHtml = escapeHtml;
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ Protocolo Aletheia v7.2.1 activado');
+            console.log('✅ navigate() definido:', typeof window.navigate === 'function');
+
+            // Cargar nodos guardados
+            const nodes = JSON.parse(localStorage.getItem('aletheia_nodes') || '[]');
+            document.getElementById('statNodes').textContent = nodes.length;
+
+            // Timer
+            setInterval(updateTimer, 1000);
+            updateTimer();
+
+            // Verificar hash inicial
+            if (window.location.hash) {
+                const section = window.location.hash.replace('#', '');
+                navigate(section);
+            }
+
+            updateProgress();
+        });
+    </script>
 </body>
 </html>
-
