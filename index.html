@@ -6,7 +6,25 @@
     <title>PROTOCOLO ALETHEIA</title>
     <link rel="stylesheet" href="style.css">
 </head>
-   
+ <script>
+  window.navigate = function(dest) {
+    if (!dest) return;
+    if (dest.startsWith('http') || dest.startsWith('//')) { window.open(dest, '_blank'); return; }
+    if (dest.startsWith('#')) { const el = document.querySelector(dest); if (el) el.scrollIntoView({behavior:'smooth'}); return; }
+    const target = document.getElementById(dest) || document.querySelector('[data-section="'+dest+'"]'); 
+    if (target) { document.querySelectorAll('section').forEach(s=>s.style.display='none'); target.style.display='block'; target.scrollIntoView({behavior:'smooth'}); }
+    else { window.location.hash = dest; }
+  };
+</script>
+🛠️ PASO 4: Guarda y sube a GitHub
+bash
+git add index.html
+git commit -m "Fix: Agregar funcion navigate global"
+git push origin main
+⚠️ Si esto no funciona
+Entonces el problema es más profundo (probablemente los scripts están en type="module" y no exponen funciones globales). En ese caso, sí reconstruimos todo.
+¿Puedes intentar esto primero? Si falla, me dices y creo el kit completo nuevo.
+  
 <body>
     <!-- Canvas para efecto Matrix -->
     <canvas id="matrix-canvas"></canvas>
