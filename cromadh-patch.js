@@ -9,7 +9,7 @@ import {
   query, where, getDocs, runTransaction, serverTimestamp
 } from './firebase-config.js';
 
-const BASE_URL = 'https://aletheia.projet45-lang.github.io/protocolo-Aletheia';
+const BASE_URL = 'https://luisjmendoza2004-lang.github.io/protocolo-Aletheia';
 
 // ── UTILIDADES ───────────────────────────────────────────────
 
