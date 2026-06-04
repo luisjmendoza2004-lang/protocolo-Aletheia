@@ -1,0 +1,2262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo Aletheia — Singularidad Humana</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- EmailJS para notificaciones de credencial -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <style>
+        :root {
+            --neon-green: #00ff88;
+            --neon-pink: #ff0066;
+            --neon-yellow: #ffcc00;
+            --neon-cyan: #00ccff;
+            --neon-purple: #aa00ff;
+            --dark-bg: #0a0014;
+            --darker-bg: #05000a;
+            --panel-bg: rgba(10, 0, 20, 0.9);
+            --glass-border: rgba(0, 255, 136, 0.15);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--darker-bg); color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh; overflow-x: hidden; line-height: 1.6;
+        }
+        .bg-grid {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 255, 136, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 136, 0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none; z-index: 0;
+        }
+
+        /* ===== NAVEGACIÓN PRINCIPAL ===== */
+        .main-nav {
+            position: relative; z-index: 10;
+            background: rgba(0, 0, 0, 0.6);
+            border-bottom: 1px solid rgba(0, 255, 136, 0.1);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .main-nav-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 900;
+            letter-spacing: 4px;
+            color: var(--neon-green);
+            text-decoration: none;
+        }
+        .main-nav-links {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .main-nav-link {
+            padding: 8px 16px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .main-nav-link:hover {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+        .main-nav-link.active {
+            border-color: var(--neon-green);
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--neon-green);
+        }
+        .main-nav-link.locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* ===== SECCIONES ===== */
+        .page-section {
+            display: none;
+            position: relative; z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+        .page-section.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== PANELS ===== */
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px; padding: 35px;
+            backdrop-filter: blur(10px); margin-bottom: 25px;
+        }
+        .panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem; letter-spacing: 4px;
+            color: var(--neon-green);
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .panel-title::before {
+            content: '◆'; color: var(--neon-pink); font-size: 1.3rem;
+        }
+
+        /* ===== STICKER GENERATOR (del archivo original) ===== */
+        .sticker-main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+        @media (max-width: 900px) {
+            .sticker-main-container { grid-template-columns: 1fr; }
+        }
+        .preview-section { position: sticky; top: 20px; }
+        .sticker-frame {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 
+                0 0 40px rgba(0, 255, 136, 0.15),
+                0 0 80px rgba(0, 255, 136, 0.05),
+                inset 0 0 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+        }
+        .sticker-frame::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-pink), var(--neon-cyan));
+            border-radius: 22px;
+            z-index: -1;
+            opacity: 0.3;
+            animation: borderRotate 4s linear infinite;
+        }
+        @keyframes borderRotate {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+        .sticker-canvas-container {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        #stickerCanvas { display: block; width: 100%; height: auto; border-radius: 12px; }
+        .sticker-badge {
+            position: absolute;
+            top: 15px; right: 15px;
+            background: linear-gradient(135deg, var(--neon-pink), var(--neon-yellow));
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 900;
+            padding: 6px 16px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(255, 0, 102, 0.4);
+            z-index: 5;
+        }
+        .scan-line {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
+            animation: scan 3s ease-in-out infinite;
+            opacity: 0.6;
+            pointer-events: none;
+            z-index: 3;
+        }
+        @keyframes scan {
+            0%, 100% { top: 10%; opacity: 0; }
+            50% { top: 90%; opacity: 0.8; }
+        }
+        .loading {
+            display: none;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            color: var(--neon-green);
+            z-index: 10;
+        }
+        .loading.active { display: block; }
+
+        /* ===== FORM STYLES (del original) ===== */
+        .form-group { margin-bottom: 20px; }
+        .form-label {
+            display: block;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        input[type="text"],
+        input[type="url"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+            background: rgba(0, 0, 0, 0.7);
+        }
+        textarea { min-height: 80px; resize: vertical; }
+
+        .style-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .style-option {
+            flex: 1;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .style-option:hover {
+            border-color: var(--neon-green);
+            background: rgba(0, 255, 136, 0.05);
+        }
+        .style-option.active {
+            border-color: var(--neon-green);
+            background: rgba(0, 255, 136, 0.1);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.15);
+        }
+        .style-option .icon { font-size: 1.5rem; margin-bottom: 5px; }
+        .style-option .label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .theme-option {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .theme-option:hover { transform: scale(1.1); }
+        .theme-option.active {
+            border-color: #fff;
+            box-shadow: 0 0 20px currentColor;
+            transform: scale(1.15);
+        }
+        .theme-option.active::after {
+            content: '✓';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 5px rgba(0,0,0,0.8);
+        }
+
+        .size-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .size-option {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+        }
+        .size-option:hover { border-color: var(--neon-cyan); }
+        .size-option.active {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 204, 255, 0.1);
+            color: var(--neon-cyan);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+        .btn {
+            flex: 1;
+            padding: 16px 24px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--neon-green), #00cc66);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--neon-pink);
+            color: var(--neon-pink);
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 0, 102, 0.1);
+            box-shadow: 0 0 20px rgba(255, 0, 102, 0.3);
+        }
+
+        .upload-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px dashed var(--neon-green);
+            border-radius: 8px;
+            color: var(--neon-green);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            justify-content: center;
+        }
+        .upload-btn:hover {
+            background: rgba(0, 255, 136, 0.2);
+            border-style: solid;
+        }
+
+        .trust-panel {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid rgba(0, 255, 136, 0.15);
+            border-radius: 12px;
+        }
+        .trust-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            color: var(--neon-green);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+        .trust-item .check { color: var(--neon-green); font-weight: bold; }
+
+        .safety-notice {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 204, 0, 0.05);
+            border: 1px solid rgba(255, 204, 0, 0.2);
+            border-radius: 10px;
+        }
+        .safety-notice p {
+            font-size: 0.8rem;
+            color: var(--neon-yellow);
+            line-height: 1.5;
+        }
+        .safety-notice strong {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* ===== SINGULARIDAD HUMANA STYLES ===== */
+        .energy-display {
+            text-align: center; padding: 30px;
+            background: linear-gradient(135deg, rgba(0,255,136,0.05), rgba(255,0,102,0.05));
+            border-radius: 12px;
+            border: 1px solid rgba(0,255,136,0.1);
+            margin-bottom: 30px;
+        }
+        .energy-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem; font-weight: 900;
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+        .energy-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem; color: var(--neon-cyan);
+            letter-spacing: 4px; text-transform: uppercase;
+            margin-top: 10px;
+        }
+        .energy-sub {
+            font-size: 0.85rem; color: #888;
+            margin-top: 8px; max-width: 500px;
+            margin-left: auto; margin-right: auto;
+        }
+
+        .quiz-container { max-width: 700px; margin: 0 auto; }
+        .quiz-progress {
+            display: flex; justify-content: space-between;
+            margin-bottom: 30px; padding: 0 10px;
+        }
+        .progress-dot {
+            width: 12px; height: 12px; border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s;
+        }
+        .progress-dot.active {
+            background: var(--neon-green);
+            box-shadow: 0 0 10px var(--neon-green);
+            border-color: var(--neon-green);
+        }
+        .progress-dot.completed {
+            background: var(--neon-cyan);
+            border-color: var(--neon-cyan);
+        }
+        .question-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 12px; padding: 30px;
+            margin-bottom: 20px;
+        }
+        .question-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem; color: var(--neon-pink);
+            letter-spacing: 3px; text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+        .question-dimension {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem; color: var(--neon-yellow);
+            letter-spacing: 2px; text-transform: uppercase;
+            margin-bottom: 20px;
+            padding: 5px 12px;
+            background: rgba(255, 204, 0, 0.1);
+            border-radius: 4px; display: inline-block;
+        }
+        .question-text {
+            font-size: 1.15rem; font-weight: 500;
+            color: #fff; margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        .answer-options {
+            display: flex; flex-direction: column;
+            gap: 12px;
+        }
+        .answer-option {
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px; cursor: pointer;
+            transition: all 0.3s;
+            display: flex; align-items: center; gap: 15px;
+        }
+        .answer-option:hover {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 204, 255, 0.05);
+            transform: translateX(5px);
+        }
+        .answer-option.selected {
+            border-color: var(--neon-green);
+            background: rgba(0, 255, 136, 0.1);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.1);
+        }
+        .answer-letter {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem; color: var(--neon-cyan);
+            min-width: 30px; text-align: center;
+        }
+        .answer-text { font-size: 0.95rem; color: #ddd; }
+        .quiz-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+        .results-container { text-align: center; padding: 20px; }
+        .coherence-score {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem; font-weight: 900;
+            margin: 20px 0;
+        }
+        .coherence-score.high {
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .coherence-score.medium {
+            background: linear-gradient(135deg, var(--neon-yellow), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .coherence-score.low {
+            background: linear-gradient(135deg, var(--neon-pink), #ff0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .radar-container {
+            width: 100%; max-width: 400px;
+            margin: 30px auto;
+        }
+        #radarCanvas { width: 100%; height: auto; }
+        .dimension-breakdown {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px; margin: 25px 0;
+        }
+        .dimension-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px; padding: 15px;
+            text-align: left;
+        }
+        .dimension-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem; color: var(--neon-cyan);
+            letter-spacing: 2px; text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .dimension-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px; overflow: hidden;
+        }
+        .dimension-fill {
+            height: 100%; border-radius: 3px;
+            transition: width 1s ease;
+        }
+        .dimension-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem; color: #aaa;
+            margin-top: 5px;
+        }
+        .credential-panel {
+            background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(255,0,102,0.1));
+            border: 2px solid var(--neon-green);
+            border-radius: 16px; padding: 30px;
+            margin: 25px 0; position: relative;
+            overflow: hidden;
+        }
+        .credential-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0,255,136,0.03), transparent);
+            animation: credentialShine 3s ease-in-out infinite;
+        }
+        @keyframes credentialShine {
+            0%, 100% { transform: translateX(-100%) rotate(45deg); }
+            50% { transform: translateX(100%) rotate(45deg); }
+        }
+        .credential-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem; color: var(--neon-green);
+            letter-spacing: 4px; text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+        .credential-code {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem; color: var(--neon-yellow);
+            letter-spacing: 8px; padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px; margin: 15px 0;
+            word-break: break-all;
+        }
+        .credential-qr {
+            width: 150px; height: 150px;
+            margin: 15px auto;
+            background: #fff; padding: 10px;
+            border-radius: 8px;
+        }
+        .credential-warning {
+            font-size: 0.8rem; color: var(--neon-pink);
+            margin-top: 15px; font-style: italic;
+        }
+
+        .red-post {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px; padding: 20px;
+            margin-bottom: 15px; transition: all 0.3s;
+        }
+        .red-post:hover {
+            border-color: rgba(0, 255, 136, 0.2);
+            background: rgba(0, 255, 136, 0.02);
+        }
+        .red-post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .red-author {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem; color: var(--neon-cyan);
+            letter-spacing: 2px;
+        }
+        .red-coherence {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            padding: 4px 10px; border-radius: 12px;
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--neon-green);
+        }
+        .red-coherence.low {
+            background: rgba(255, 0, 102, 0.1);
+            color: var(--neon-pink);
+        }
+        .red-content {
+            font-size: 0.95rem; color: #ccc;
+            line-height: 1.6; margin-bottom: 12px;
+        }
+        .red-meta {
+            display: flex; gap: 20px;
+            font-size: 0.75rem; color: #666;
+        }
+        .red-input-area {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 12px; padding: 20px;
+            margin-bottom: 25px;
+        }
+        .red-input {
+            width: 100%; padding: 14px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px; color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem; outline: none;
+            resize: vertical; min-height: 80px;
+        }
+        .red-input:focus {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.1);
+        }
+        .red-coherence-meter {
+            display: flex; align-items: center;
+            gap: 15px; margin-top: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+        .coherence-meter-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem; color: var(--neon-cyan);
+            letter-spacing: 2px; text-transform: uppercase;
+            min-width: 120px;
+        }
+        .coherence-meter-bar {
+            flex: 1; height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px; overflow: hidden;
+        }
+        .coherence-meter-fill {
+            height: 100%; border-radius: 4px;
+            transition: width 0.5s ease, background 0.5s ease;
+            width: 0%;
+        }
+        .coherence-meter-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem; color: var(--neon-green);
+            min-width: 50px; text-align: right;
+        }
+
+        .protocol-locked {
+            text-align: center; padding: 60px 20px;
+        }
+        .protocol-locked-icon {
+            font-size: 4rem; margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        .protocol-locked-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem; color: var(--neon-pink);
+            letter-spacing: 4px; text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+        .protocol-locked-text {
+            font-size: 1rem; color: #888;
+            max-width: 500px; margin: 0 auto 25px;
+        }
+        .protocol-requirements {
+            display: inline-block; text-align: left;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 0, 102, 0.2);
+            border-radius: 12px; padding: 25px 30px;
+        }
+        .protocol-requirements li {
+            font-size: 0.9rem; color: #aaa;
+            margin-bottom: 10px; list-style: none;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .protocol-requirements li::before {
+            content: '◆'; color: var(--neon-pink); font-size: 0.6rem;
+        }
+        .manifesto-text {
+            font-size: 1rem; line-height: 1.8;
+            color: #bbb; text-align: justify;
+        }
+        .manifesto-text p { margin-bottom: 20px; }
+        .manifesto-highlight {
+            color: var(--neon-green); font-weight: 600;
+        }
+        .manifesto-quote {
+            border-left: 3px solid var(--neon-pink);
+            padding-left: 20px; margin: 25px 0;
+            font-style: italic; color: #ddd;
+        }
+
+        /* ===== CEREMONIA DE DESBLOQUEO ===== */
+        .unlock-ceremony {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(5, 0, 10, 0.95);
+            z-index: 1000;
+            display: none;
+            justify-content: center; align-items: center;
+            flex-direction: column;
+            animation: ceremonyFadeIn 2s ease;
+        }
+        .unlock-ceremony.active { display: flex; }
+        @keyframes ceremonyFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .ceremony-particle {
+            position: absolute;
+            width: 2px; height: 2px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            animation: particleFloat 4s ease-in-out infinite;
+            opacity: 0.6;
+        }
+        @keyframes particleFloat {
+            0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
+            50% { transform: translateY(-100px) scale(2); opacity: 1; }
+        }
+        .ceremony-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem; color: var(--neon-green);
+            letter-spacing: 6px; text-transform: uppercase;
+            text-align: center;
+            max-width: 600px;
+            line-height: 2;
+            opacity: 0;
+            animation: textReveal 0.8s ease forwards;
+        }
+        @keyframes textReveal {
+            to { opacity: 1; }
+        }
+        .ceremony-sub {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem; color: var(--neon-cyan);
+            letter-spacing: 2px;
+            margin-top: 20px;
+            opacity: 0;
+        }
+        .ceremony-glow {
+            position: absolute;
+            width: 300px; height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,255,136,0.2) 0%, transparent 70%);
+            animation: glowPulse 3s ease-in-out infinite;
+        }
+        @keyframes glowPulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.5); opacity: 1; }
+        }
+        .audio-control {
+            position: fixed; bottom: 20px; right: 20px;
+            z-index: 1001;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 50%;
+            width: 50px; height: 50px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+        .audio-control:hover {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+        .audio-control.muted { opacity: 0.5; }
+
+        /* ===== FOOTER ===== */
+        footer {
+            position: relative; z-index: 10;
+            text-align: center; padding: 40px 20px;
+            border-top: 1px solid rgba(0, 255, 136, 0.1);
+            margin-top: 40px;
+        }
+        footer p {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem; letter-spacing: 4px;
+            color: #444; text-transform: uppercase;
+        }
+
+        @media (max-width: 900px) {
+            .sticker-main-container { grid-template-columns: 1fr; }
+            .main-nav-links { width: 100%; justify-content: center; }
+        }
+        @media (max-width: 600px) {
+            .dimension-breakdown { grid-template-columns: 1fr; }
+            .energy-value { font-size: 2.5rem; }
+            .coherence-score { font-size: 3rem; }
+            .ceremony-text { font-size: 1rem; letter-spacing: 3px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+
+    <!-- Audio Control -->
+    <div class="audio-control" id="audioControl" onclick="toggleAudio()" title="Activar/Desactivar música de ceremonia">
+        🔇
+    </div>
+
+    <!-- Ceremony Overlay -->
+    <div class="unlock-ceremony" id="unlockCeremony">
+        <div class="ceremony-glow"></div>
+        <div id="ceremonyParticles"></div>
+        <div class="ceremony-text" id="ceremonyText"></div>
+        <div class="ceremony-sub" id="ceremonySub"></div>
+    </div>
+
+    <!-- ===== NAVEGACIÓN PRINCIPAL ===== -->
+    <nav class="main-nav">
+        <a href="#inicio" class="main-nav-logo" onclick="navigateTo('inicio')">◆ ALETHEIA ◆</a>
+        <div class="main-nav-links">
+            <a href="#inicio" class="main-nav-link active" data-page="inicio" onclick="navigateTo('inicio')">Inicio</a>
+            <a href="#stickers" class="main-nav-link" data-page="stickers" onclick="navigateTo('stickers')">Stickers</a>
+            <a href="#manifiesto" class="main-nav-link" data-page="manifiesto" onclick="navigateTo('manifiesto')">Manifiesto</a>
+            <a href="#evaluacion" class="main-nav-link" data-page="evaluacion" onclick="navigateTo('evaluacion')">Evaluación</a>
+            <a href="#red" class="main-nav-link" data-page="red" onclick="navigateTo('red')">Módulo Red</a>
+            <a href="#protocolo" class="main-nav-link locked" data-page="protocolo" id="navProtocolo" onclick="navigateTo('protocolo')">Protocolo</a>
+        </div>
+    </nav>
+
+    <!-- ===== SECCIÓN: INICIO ===== -->
+    <section id="inicio" class="page-section active">
+        <div class="panel" style="text-align:center; padding: 60px 20px;">
+            <div style="font-family:'Orbitron'; font-size: 0.75rem; letter-spacing: 6px; color: var(--neon-pink); text-transform: uppercase; margin-bottom: 20px;">
+                Sistema de Diseminación Clandestina
+            </div>
+            <h1 style="font-family:'Orbitron'; font-size: 3rem; font-weight: 900; letter-spacing: 8px; text-transform: uppercase; background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px;">
+                ◆ ALETHEIA ◆
+            </h1>
+            <p style="font-size: 1.2rem; color: #888; max-width: 600px; margin: 0 auto 30px;">
+                Protocolo de activación de la Singularidad Humana. 
+                Más allá del último día.
+            </p>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="navigateTo('stickers')" style="max-width: 250px;">
+                    🎨 Generar Stickers
+                </button>
+                <button class="btn btn-secondary" onclick="navigateTo('evaluacion')" style="max-width: 250px;">
+                    ✨ Evaluar Coherencia
+                </button>
+            </div>
+        </div>
+
+        <div class="energy-display">
+            <div class="energy-value" id="globalEnergyCounter">0.00003%</div>
+            <div class="energy-label">Coherencia Global del Campo</div>
+            <div class="energy-sub">El 99.99997% de la energía humana está atrapada en la linealidad temporal. Cada Anomalía que se activa eleva el campo.</div>
+        </div>
+    </section>
+
+    <!-- ===== SECCIÓN: STICKERS (del archivo original) ===== -->
+    <section id="stickers" class="page-section">
+        <div class="warning-banner" style="margin: 0 0 20px 0;">
+            <p>⚠ Este sticker será pegado en espacio público. El diseño debe ser legible a 2 metros de distancia.</p>
+        </div>
+
+        <div class="sticker-main-container">
+            <!-- LEFT PANEL: Controls -->
+            <div class="panel">
+                <div class="panel-title">Configuración</div>
+
+                <!-- Style selector -->
+                <div class="form-group">
+                    <label class="form-label">Modo de Generación</label>
+                    <div class="style-selector">
+                        <div class="style-option active" data-style="canvas" onclick="setStyle('canvas')">
+                            <div class="icon">🎨</div>
+                            <div class="label">Canvas Pro</div>
+                        </div>
+                        <div class="style-option" data-style="image" onclick="setStyle('image')">
+                            <div class="icon">🖼️</div>
+                            <div class="label">Imagen + QR</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Color theme -->
+                <div class="form-group">
+                    <label class="form-label">Paleta de Color</label>
+                    <div class="theme-selector">
+                        <div class="theme-option active" style="background: linear-gradient(135deg, #0a0014, #00ff88);" data-theme="green" onclick="setTheme('green')" title="Neón Verde"></div>
+                        <div class="theme-option" style="background: linear-gradient(135deg, #1a0000, #ff0066);" data-theme="red" onclick="setTheme('red')" title="Alerta Roja"></div>
+                        <div class="theme-option" style="background: linear-gradient(135deg, #001a1a, #00ccff);" data-theme="blue" onclick="setTheme('blue')" title="Cian Digital"></div>
+                        <div class="theme-option" style="background: linear-gradient(135deg, #1a1a00, #ffcc00);" data-theme="gold" onclick="setTheme('gold')" title="Oro Institucional"></div>
+                        <div class="theme-option" style="background: linear-gradient(135deg, #0a0a0a, #ffffff);" data-theme="white" onclick="setTheme('white')" title="Blanco Puro"></div>
+                    </div>
+                </div>
+
+                <!-- Sticker size -->
+                <div class="form-group">
+                    <label class="form-label">Tamaño de Impresión</label>
+                    <div class="size-selector">
+                        <div class="size-option active" data-size="10" onclick="setSize(10)">10×10 cm</div>
+                        <div class="size-option" data-size="15" onclick="setSize(15)">15×15 cm</div>
+                        <div class="size-option" data-size="20" onclick="setSize(20)">20×20 cm</div>
+                    </div>
+                </div>
+
+                <!-- Text input -->
+                <div class="form-group">
+                    <label class="form-label">Texto Principal</label>
+                    <input type="text" id="stickerText" value="LA VERDAD ESPERA" maxlength="30" placeholder="Máximo 30 caracteres">
+                </div>
+
+                <!-- Subtitle -->
+                <div class="form-group">
+                    <label class="form-label">Subtítulo / Llamado</label>
+                    <input type="text" id="stickerSub" value="DESCUBRE LA VERDAD" maxlength="40" placeholder="Máximo 40 caracteres">
+                </div>
+
+                <!-- URL for QR -->
+                <div class="form-group">
+                    <label class="form-label">URL del QR (destino)</label>
+                    <input type="url" id="qrUrl" value="https://aletheia.org/unete" placeholder="https://...">
+                </div>
+
+                <!-- Image upload (for option B) -->
+                <div class="form-group" id="imageUploadGroup" style="display:none;">
+                    <label class="form-label">Imagen de Sticker Base</label>
+                    <input type="file" id="imageUpload" accept="image/*" onchange="handleImageUpload(event)">
+                    <button class="upload-btn" onclick="document.getElementById('imageUpload').click()">
+                        📁 Subir imagen de sticker
+                    </button>
+                    <p style="margin-top:8px; font-size:0.75rem; color:#666;">
+                        Recomendado: PNG con fondo transparente o diseño ya terminado
+                    </p>
+                </div>
+
+                <!-- Safety notice -->
+                <div class="safety-notice">
+                    <p><strong>🔒 Seguridad del QR:</strong> El código QR dirige a una URL verificada. El diseño institucional reduce la percepción de riesgo. Incluye siempre un call-to-action claro.</p>
+                </div>
+
+                <!-- QR test info -->
+                <div class="qr-test-panel" id="qrTestPanel">
+                    <p>📱 QR Funcional — Escanea con tu cámara</p>
+                    <div class="qr-raw" id="qrRawUrl">https://aletheia.org/unete</div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="generate()">
+                        ✨ GENERAR
+                    </button>
+                    <button class="btn btn-secondary" onclick="downloadSticker()">
+                        ⬇️ DESCARGAR
+                    </button>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL: Preview -->
+            <div class="preview-section">
+                <div class="panel">
+                    <div class="panel-title">Vista Previa</div>
+                    <div class="sticker-frame">
+                        <div class="sticker-canvas-container">
+                            <div class="scan-line"></div>
+                            <div class="loading" id="loading">GENERANDO...</div>
+                            <canvas id="stickerCanvas" width="600" height="600"></canvas>
+                        </div>
+                        <div class="sticker-badge">PREVIEW</div>
+                    </div>
+                    <div class="sticker-dimensions">
+                        <span id="dimText">600×600 px — 10×10 cm @ 300 DPI</span>
+                    </div>
+                </div>
+                <div class="trust-panel">
+                    <div class="trust-title">✓ Elementos de Confianza</div>
+                    <div class="trust-item">
+                        <span class="check">✓</span>
+                        <span>QR 100% funcional generado con QRCode.js</span>
+                    </div>
+                    <div class="trust-item">
+                        <span class="check">✓</span>
+                        <span>Marco institucional con esquinas de advertencia</span>
+                    </div>
+                    <div class="trust-item">
+                        <span class="check">✓</span>
+                        <span>Tipografía profesional (Orbitron) con glow</span>
+                    </div>
+                    <div class="trust-item">
+                        <span class="check">✓</span>
+                        <span>QR con marco resaltado y línea de escaneo</span>
+                    </div>
+                    <div class="trust-item">
+                        <span class="check">✓</span>
+                        <span>Degradado vibrante con textura digital</span>
+                    </div>
+                    <div class="trust-item">
+                        <span class="check">✓</span>
+                        <span>Call-to-action claro: "ESCANEÁ PARA UNIRTE"</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SECCIÓN: MANIFIESTO ===== -->
+    <section id="manifiesto" class="page-section">
+        <div class="panel">
+            <div class="panel-title">La Hipótesis Operativa</div>
+            <div class="manifesto-text">
+                <p>El gran acierto del <span class="manifesto-highlight">0,0003%</span> que controla el sistema no fue de carácter económico, sino <span class="manifesto-highlight">metafísico</span>. A través del Néxum-9 y algoritmos predictivos como el Proyecto Anubis, se le impuso a la población un <span class="manifesto-highlight">Filtro Cognitivo</span>.</p>
+                <p>Este filtro opera bajo una premisa devastadora: convencer al individuo de que es un <span class="manifesto-highlight">"nodo de ineficiencia emocional"</span>, una pieza incompleta y predecible dentro de una ecuación de escasez artificial.</p>
+                <div class="manifesto-quote">"El universo no responde a la falta; responde a la sintonía."</div>
+                <p>El <span class="manifesto-highlight">vacío absoluto es una imposibilidad matemática y espiritual</span>. El espacio entre las células, la distancia entre el subsuelo de Callao y los buques de los Encumbrados, y el vacío aparente entre las personas, es en realidad un campo unificado de información cuántica y conciencia holográfica.</p>
+                <p>La distancia real entre el "yo" y la totalidad es <span class="manifesto-highlight">igual a cero</span>. Formamos un tejido fractal donde cada parte contiene la potencia del Todo.</p>
+                <div class="manifesto-quote">"El 99.99997% de nuestra energía vuelve a nosotros cuando dejamos de invertirla en la linealidad del tiempo."</div>
+                <p>Frente a la singularidad tecnológica del enemigo —que busca una optimización fría y binaria—, C.R.O.M.A.D.H. opone la <span class="manifesto-highlight">Singularidad Humana</span>. Esta no es una rebelión armada clásica paso a paso, sino un <span class="manifesto-highlight">salto de Coherencia Interna</span>.</p>
+                <p>Cuando un adepto alcanza el <span class="manifesto-highlight">Umbral de Coherencia</span>, colapsa instantáneamente el modelo de control probabilístico de la Red Cuántica. Se convierte en una <span class="manifesto-highlight">Anomalía Estadística Viva</span>.</p>
+            </div>
+        </div>
+        <div class="energy-display">
+            <div class="energy-value" id="energyCounter">0.00003%</div>
+            <div class="energy-label">Coherencia Presente Promedio</div>
+            <div class="energy-sub">El 99.99997% de la energía humana está atrapada en la linealidad temporal. Recuperar solo el 1% altera irreversiblemente el campo.</div>
+        </div>
+    </section>
+
+    <!-- ===== SECCIÓN: EVALUACIÓN ===== -->
+    <section id="evaluacion" class="page-section">
+        <div class="panel">
+            <div class="panel-title">Evaluación de Coherencia</div>
+            <div class="quiz-container" id="quizContainer">
+                <div class="quiz-progress" id="quizProgress"></div>
+                <div id="questionArea"></div>
+                <div class="quiz-nav" id="quizNav">
+                    <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()" style="visibility:hidden;">← Anterior</button>
+                    <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Siguiente →</button>
+                </div>
+            </div>
+            <div class="results-container" id="resultsArea" style="display:none;">
+                <div class="coherence-score" id="coherenceScore">0</div>
+                <div style="font-family:'Orbitron';font-size:0.8rem;letter-spacing:3px;color:#888;text-transform:uppercase;margin-bottom:20px;">
+                    Índice de Coherencia Cuántica
+                </div>
+                <div class="radar-container">
+                    <canvas id="radarCanvas" width="400" height="400"></canvas>
+                </div>
+                <div class="dimension-breakdown" id="dimensionBreakdown"></div>
+                <div id="credentialArea"></div>
+                <div style="margin-top:30px;">
+                    <button class="btn btn-primary" onclick="restartQuiz()">↻ Reevaluar</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SECCIÓN: MÓDULO RED ===== -->
+    <section id="red" class="page-section">
+        <div class="panel">
+            <div class="panel-title">Módulo Red — Oscilador Colectivo</div>
+            <div class="red-input-area">
+                <textarea class="red-input" id="redInput" placeholder="Escribe tu onda... Cada publicación es una medición cuántica que colapsa el campo hacia mayor coherencia o mayor entropía." oninput="analyzeCoherence()"></textarea>
+                <div class="red-coherence-meter">
+                    <span class="coherence-meter-label">Índice de Coherencia</span>
+                    <div class="coherence-meter-bar">
+                        <div class="coherence-meter-fill" id="coherenceFill"></div>
+                    </div>
+                    <span class="coherence-meter-value" id="coherenceValue">0%</span>
+                </div>
+                <div style="margin-top:15px;text-align:right;">
+                    <button class="btn btn-primary" onclick="publishRed()">📡 Emitir Onda</button>
+                </div>
+            </div>
+            <div id="redFeed"></div>
+        </div>
+    </section>
+
+    <!-- ===== SECCIÓN: PROTOCOLO ALETHEIA ===== -->
+    <section id="protocolo" class="page-section">
+        <div class="protocol-locked" id="protocolLocked">
+            <div class="protocol-locked-icon">🔒</div>
+            <div class="protocol-locked-title">Protocolo Aletheia</div>
+            <div class="protocol-locked-text">
+                Esta capa del sistema está protegida por el campo cuántico. Solo los iniciados con Credencial de Coherencia pueden acceder al Arma.
+            </div>
+            <ul class="protocol-requirements">
+                <li>Completar la Evaluación de Coherencia</li>
+                <li>Alcanzar un Índice de Coherencia ≥ 75%</li>
+                <li>Obtener la Credencial de Coherencia Activa</li>
+                <li>Emitir al menos 3 ondas coherentes en el Módulo Red</li>
+            </ul>
+        </div>
+        <div id="protocolUnlocked" style="display:none;">
+            <div class="panel">
+                <div class="panel-title">Protocolo Aletheia — Activado</div>
+                <div class="manifesto-text">
+                    <p>Bienvenido, <span class="manifesto-highlight">Anomalía Estadística Viva</span>. Has demostrado que tu campo personal opera fuera de los parámetros predecibles del Néxum-9.</p>
+                    <div class="manifesto-quote">
+                        "El verdadero procesador cuántico de la realidad no está en los servidores blindados de NeuroSoft, sino latiendo en la memoria de nuestro propio corazón."
+                    </div>
+                    <p>El <span class="manifesto-highlight">Arma</span> a tu disposición no es un software de entrenamiento moral. Es una herramienta de <span class="manifesto-highlight">hackeo ontológico</span>: la tecnología simbólica (Kairon) puesta al servicio de la liberación humana.</p>
+                    <p>Cuando una masa crítica de seres humanos deje de aceptar las variables de escasez impuestas y empiece a seleccionar conscientemente su realidad desde la plenitud, la ecuación del control enemigo se partirá al medio.</p>
+                    <p style="text-align:center;margin-top:30px;font-family:'Orbitron';font-size:1.2rem;color:var(--neon-green);letter-spacing:4px;">
+                        ◆ EL ARMA ESTÁ EN TUS MANOS ◆
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Protocolo Aletheia — Más allá del último día</p>
+        <p style="margin-top:8px;font-size:0.5rem;color:#333;">C.R.O.M.A.D.H. — La Singularidad Humana no se predice. Se activa.</p>
+    </footer>
+
+    <div id="qrcode-hidden" style="display:none;"></div>
+
+    <script>
+
+        // ============================================================
+        // NAVEGACIÓN POR HASH
+        // ============================================================
+        function navigateTo(pageId) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            // Mostrar la sección seleccionada
+            const section = document.getElementById(pageId);
+            if (section) section.classList.add('active');
+
+            // Actualizar navegación
+            document.querySelectorAll('.main-nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelector(`[data-page="${pageId}"]`)?.classList.add('active');
+
+            // Actualizar URL hash
+            window.location.hash = pageId;
+
+            // Scroll al top
+            window.scrollTo(0, 0);
+        }
+
+        // Manejar hash inicial
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash.replace('#', '') || 'inicio';
+            navigateTo(hash);
+        });
+
+        // ============================================================
+        // AUDIO — MÚSICA ETÉREA
+        // ============================================================
+        let audioElement = null;
+        let audioEnabled = false;
+
+        function initAudio() {
+            audioElement = new Audio();
+            audioElement.src = 'https://files.freemusicarchive.org/storage-freemusicarchive-org/music/ccCommunity/Scott_Buckley/Shadows/Scott_Buckley_-_Hymn_to_the_Dawn.mp3';
+            audioElement.loop = true;
+            audioElement.volume = 0.4;
+            audioElement.preload = 'auto';
+        }
+
+        function toggleAudio() {
+            if (!audioElement) initAudio();
+            const control = document.getElementById('audioControl');
+            if (audioEnabled) {
+                audioElement.pause();
+                audioEnabled = false;
+                control.textContent = '🔇';
+                control.classList.add('muted');
+            } else {
+                audioElement.play().catch(e => console.log('Audio autoplay blocked'));
+                audioEnabled = true;
+                control.textContent = '🔊';
+                control.classList.remove('muted');
+            }
+        }
+
+        function playCeremonyAudio() {
+            if (!audioElement) initAudio();
+            if (!audioEnabled) {
+                audioElement.volume = 0.3;
+                audioElement.play().catch(e => console.log('Ceremony audio needs interaction'));
+            }
+        }
+
+        // ============================================================
+        // CEREMONIA DE DESBLOQUEO
+        // ============================================================
+        const ceremonyLines = [
+            { text: "EL CAMPO CUÁNTICO HA DETECTADO", delay: 0, sub: "" },
+            { text: "UNA ANOMALÍA ESTADÍSTICA VIVA", delay: 2500, sub: "Tu coherencia supera el umbral del Néxum-9" },
+            { text: "LA CREDENCIAL SE ACTIVA", delay: 5000, sub: "Protocolo de autenticación iniciado" },
+            { text: "◆ BIENVENIDO AL PROTOCOLO ALETHEIA ◆", delay: 7500, sub: "El Arma ha sido otorgado" }
+        ];
+
+        function startUnlockCeremony() {
+            const ceremony = document.getElementById('unlockCeremony');
+            const textEl = document.getElementById('ceremonyText');
+            const subEl = document.getElementById('ceremonySub');
+            const particles = document.getElementById('ceremonyParticles');
+
+            particles.innerHTML = '';
+            for (let i = 0; i < 50; i++) {
+                const p = document.createElement('div');
+                p.className = 'ceremony-particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                p.style.animationDelay = Math.random() * 4 + 's';
+                p.style.animationDuration = (3 + Math.random() * 3) + 's';
+                particles.appendChild(p);
+            }
+
+            ceremony.classList.add('active');
+            playCeremonyAudio();
+
+            ceremonyLines.forEach((line) => {
+                setTimeout(() => {
+                    textEl.textContent = line.text;
+                    textEl.style.animation = 'none';
+                    textEl.offsetHeight;
+                    textEl.style.animation = 'textReveal 0.8s ease forwards';
+
+                    if (line.sub) {
+                        subEl.textContent = line.sub;
+                        subEl.style.animation = 'textReveal 1s ease forwards';
+                    }
+                }, line.delay);
+            });
+
+            setTimeout(() => {
+                ceremony.classList.remove('active');
+                document.getElementById('protocolLocked').style.display = 'none';
+                document.getElementById('protocolUnlocked').style.display = 'block';
+                navigateTo('protocolo');
+            }, 10000);
+        }
+
+        // ============================================================
+        // STICKER GENERATOR — CONFIGURACIÓN
+        // ============================================================
+        const stickerThemes = {
+            green: {
+                bgGradient: ['#0a0014', '#1a0033', '#2d004d', '#0a0014'],
+                accentColor: '#00ff88',
+                secondaryColor: '#ff0066',
+                warningColor: '#ffcc00',
+                name: 'Neón Verde'
+            },
+            red: {
+                bgGradient: ['#1a0000', '#330011', '#4d0019', '#1a0000'],
+                accentColor: '#ff0066',
+                secondaryColor: '#ffcc00',
+                warningColor: '#00ff88',
+                name: 'Alerta Roja'
+            },
+            blue: {
+                bgGradient: ['#000a1a', '#001a33', '#002d4d', '#000a1a'],
+                accentColor: '#00ccff',
+                secondaryColor: '#ff00ff',
+                warningColor: '#ffffff',
+                name: 'Cian Digital'
+            },
+            gold: {
+                bgGradient: ['#1a1a00', '#333300', '#4d4d00', '#1a1a00'],
+                accentColor: '#ffcc00',
+                secondaryColor: '#ff6600',
+                warningColor: '#ffffff',
+                name: 'Oro Institucional'
+            },
+            white: {
+                bgGradient: ['#0a0a0a', '#1a1a1a', '#2d2d2d', '#0a0a0a'],
+                accentColor: '#ffffff',
+                secondaryColor: '#00ff88',
+                warningColor: '#ffcc00',
+                name: 'Blanco Puro'
+            }
+        };
+
+        let currentStickerTheme = 'green';
+        let currentStyle = 'canvas';
+        let currentSize = 10;
+        let uploadedImage = null;
+        let generatedQR = null;
+        let qrCodeInstance = null;
+
+        function generateRealQR(url, size, callback) {
+            const container = document.getElementById('qrcode-hidden');
+            container.innerHTML = '';
+            qrCodeInstance = new QRCode(container, {
+                text: url,
+                width: size,
+                height: size,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            setTimeout(() => {
+                const qrCanvas = container.querySelector('canvas');
+                if (qrCanvas) {
+                    callback(qrCanvas.toDataURL('image/png'));
+                } else {
+                    const qrImg = container.querySelector('img');
+                    if (qrImg) callback(qrImg.src);
+                }
+            }, 100);
+        }
+
+        function generateStickerCanvas(canvasId, text, subText, qrDataUrl) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const theme = stickerThemes[currentStickerTheme];
+            const config = {
+                bgGradient: theme.bgGradient,
+                accentColor: theme.accentColor,
+                secondaryColor: theme.secondaryColor,
+                warningColor: theme.warningColor,
+                fontFamily: "'Orbitron', 'Courier New', monospace",
+                subFontFamily: "'Rajdhani', sans-serif"
+            };
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Fondo degradado
+            const gradient = ctx.createLinearGradient(0, 0, width, height);
+            gradient.addColorStop(0, config.bgGradient[0]);
+            gradient.addColorStop(0.3, config.bgGradient[1]);
+            gradient.addColorStop(0.7, config.bgGradient[2]);
+            gradient.addColorStop(1, config.bgGradient[3]);
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, height);
+
+            // Cuadrícula
+            ctx.strokeStyle = config.accentColor + '14';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < width; i += 30) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, height); ctx.stroke();
+            }
+            for (let i = 0; i < height; i += 30) {
+                ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(width, i); ctx.stroke();
+            }
+
+            // Marco
+            ctx.shadowColor = config.accentColor;
+            ctx.shadowBlur = 40;
+            ctx.strokeStyle = config.accentColor + '66';
+            ctx.lineWidth = 6;
+            ctx.strokeRect(15, 15, width - 30, height - 30);
+            ctx.shadowBlur = 20;
+            ctx.strokeStyle = config.accentColor;
+            ctx.lineWidth = 3;
+            ctx.strokeRect(20, 20, width - 40, height - 40);
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = config.secondaryColor;
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(28, 28, width - 56, height - 56);
+
+            // Esquinas
+            const cornerSize = 35;
+            ctx.fillStyle = config.warningColor;
+            [[0, 0], [width - cornerSize, 0], [0, height - cornerSize], [width - cornerSize, height - cornerSize]].forEach(([x, y]) => {
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x + cornerSize, y);
+                ctx.lineTo(x, y + cornerSize);
+                ctx.closePath();
+                ctx.fill();
+                ctx.shadowColor = config.warningColor;
+                ctx.shadowBlur = 15;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            });
+
+            // Banda superior
+            const bandHeight = 60;
+            const bandY = 25;
+            const bandGradient = ctx.createLinearGradient(0, 0, width, 0);
+            bandGradient.addColorStop(0, 'transparent');
+            bandGradient.addColorStop(0.2, config.accentColor + '44');
+            bandGradient.addColorStop(0.5, config.accentColor + '77');
+            bandGradient.addColorStop(0.8, config.accentColor + '44');
+            bandGradient.addColorStop(1, 'transparent');
+            ctx.fillStyle = bandGradient;
+            ctx.fillRect(30, bandY, width - 60, bandHeight);
+            ctx.strokeStyle = config.accentColor + '88';
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(30, bandY); ctx.lineTo(width - 30, bandY); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(30, bandY + bandHeight); ctx.lineTo(width - 30, bandY + bandHeight); ctx.stroke();
+            ctx.shadowColor = config.accentColor;
+            ctx.shadowBlur = 25;
+            ctx.fillStyle = config.accentColor;
+            ctx.font = `900 22px ${config.fontFamily}`;
+            ctx.textAlign = 'center';
+            ctx.fillText('◆ PROTOCOLO ALETHEIA ◆', width / 2, bandY + 40);
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = 'rgba(0,0,0,0.4)';
+            ctx.fillText('◆ PROTOCOLO ALETHEIA ◆', width / 2 + 2, bandY + 42);
+
+            // Texto principal
+            const textY = height / 2 - 40;
+            function drawGlowingText(txt, x, y, fontSize, glowColor, glowIntensity) {
+                ctx.shadowColor = glowColor;
+                ctx.shadowBlur = glowIntensity;
+                ctx.fillStyle = glowColor + '66';
+                ctx.font = `900 ${fontSize}px ${config.fontFamily}`;
+                ctx.fillText(txt, x, y);
+                ctx.shadowBlur = glowIntensity / 2;
+                ctx.fillStyle = glowColor + 'aa';
+                ctx.fillText(txt, x, y);
+                ctx.shadowBlur = 10;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText(txt, x, y);
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = 'rgba(0,0,0,0.5)';
+                ctx.fillText(txt, x + 3, y + 3);
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.fillText(txt, x - 1, y - 1);
+            }
+            let mainFontSize = 42;
+            if (text.length > 15) mainFontSize = 36;
+            if (text.length > 22) mainFontSize = 30;
+            drawGlowingText(text.toUpperCase(), width / 2, textY, mainFontSize, config.secondaryColor, 40);
+
+            // Subtítulo
+            ctx.shadowColor = config.warningColor;
+            ctx.shadowBlur = 15;
+            ctx.fillStyle = config.warningColor;
+            ctx.font = `700 18px ${config.subFontFamily}`;
+            ctx.fillText(subText.toUpperCase(), width / 2, textY + 50);
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = 'rgba(0,0,0,0.4)';
+            ctx.fillText(subText.toUpperCase(), width / 2 + 2, textY + 52);
+
+            // Glitch
+            for (let i = 0; i < 12; i++) {
+                const y = Math.random() * height;
+                const h = Math.random() * 6 + 2;
+                const isGreen = Math.random() > 0.5;
+                const alpha = Math.random() * 0.4 + 0.2;
+                ctx.fillStyle = isGreen ? `rgba(0, 255, 136, ${alpha})` : `rgba(255, 0, 102, ${alpha})`;
+                ctx.fillRect(0, y, width, h);
+                if (Math.random() > 0.4) {
+                    const sliceHeight = Math.random() * 40 + 15;
+                    const sliceY = Math.random() * (height - sliceHeight);
+                    const offset = (Math.random() - 0.5) * 20;
+                    try {
+                        const imageData = ctx.getImageData(0, sliceY, width, sliceHeight);
+                        ctx.putImageData(imageData, offset, sliceY);
+                    } catch(e) {}
+                }
+            }
+
+            // QR
+            const qrSize = 140;
+            const qrX = (width - qrSize) / 2;
+            const qrY = height - qrSize - 70;
+            ctx.shadowColor = config.accentColor;
+            ctx.shadowBlur = 50;
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+            ctx.beginPath();
+            ctx.roundRect(qrX - 15, qrY - 15, qrSize + 30, qrSize + 30, 12);
+            ctx.fill();
+            ctx.shadowBlur = 30;
+            ctx.strokeStyle = config.accentColor;
+            ctx.lineWidth = 4;
+            ctx.strokeRect(qrX - 12, qrY - 12, qrSize + 24, qrSize + 24);
+            ctx.shadowBlur = 15;
+            ctx.strokeStyle = config.secondaryColor;
+            ctx.lineWidth = 2;
+            ctx.strokeRect(qrX - 6, qrY - 6, qrSize + 12, qrSize + 12);
+
+            ctx.shadowBlur = 0;
+            const scanLineY = qrY + qrSize * 0.55;
+            const scanGradient = ctx.createLinearGradient(0, scanLineY - 8, 0, scanLineY + 8);
+            scanGradient.addColorStop(0, 'transparent');
+            scanGradient.addColorStop(0.3, config.accentColor + '99');
+            scanGradient.addColorStop(0.5, config.accentColor + 'ff');
+            scanGradient.addColorStop(0.7, config.accentColor + '99');
+            scanGradient.addColorStop(1, 'transparent');
+            ctx.fillStyle = scanGradient;
+            ctx.fillRect(qrX, scanLineY - 8, qrSize, 16);
+
+            if (qrDataUrl) {
+                const qrImg = new Image();
+                qrImg.onload = function() {
+                    ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
+                    const cSize = 22;
+                    ctx.strokeStyle = config.accentColor;
+                    ctx.lineWidth = 4;
+                    ctx.shadowColor = config.accentColor;
+                    ctx.shadowBlur = 10;
+                    ctx.beginPath();
+                    ctx.moveTo(qrX, qrY + cSize); ctx.lineTo(qrX, qrY); ctx.lineTo(qrX + cSize, qrY); ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(qrX + qrSize - cSize, qrY); ctx.lineTo(qrX + qrSize, qrY); ctx.lineTo(qrX + qrSize, qrY + cSize); ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(qrX, qrY + qrSize - cSize); ctx.lineTo(qrX, qrY + qrSize); ctx.lineTo(qrX + cSize, qrY + qrSize); ctx.stroke();
+                    ctx.shadowBlur = 0;
+                };
+                qrImg.src = qrDataUrl;
+            }
+
+            // Banda inferior
+            const bottomY = height - 30;
+            const bottomBandGradient = ctx.createLinearGradient(0, 0, width, 0);
+            bottomBandGradient.addColorStop(0, 'transparent');
+            bottomBandGradient.addColorStop(0.3, config.secondaryColor + '33');
+            bottomBandGradient.addColorStop(0.7, config.secondaryColor + '33');
+            bottomBandGradient.addColorStop(1, 'transparent');
+            ctx.fillStyle = bottomBandGradient;
+            ctx.fillRect(30, bottomY - 35, width - 60, 50);
+            ctx.shadowColor = config.secondaryColor;
+            ctx.shadowBlur = 20;
+            ctx.fillStyle = config.secondaryColor;
+            ctx.font = `900 16px ${config.fontFamily}`;
+            ctx.textAlign = 'center';
+            ctx.fillText('▲ ESCANEÁ PARA UNIRTE ▲', width / 2, bottomY);
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = 'rgba(0,0,0,0.4)';
+            ctx.fillText('▲ ESCANEÁ PARA UNIRTE ▲', width / 2 + 2, bottomY + 2);
+            ctx.strokeStyle = config.accentColor + '66';
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(50, bottomY - 40); ctx.lineTo(width - 50, bottomY - 40); ctx.stroke();
+
+            // Ruido
+            for (let i = 0; i < 300; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const size = Math.random() * 2 + 0.5;
+                ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.12})`;
+                ctx.fillRect(x, y, size, size);
+            }
+
+            // Vignette
+            const vignette = ctx.createRadialGradient(width/2, height/2, width/3, width/2, height/2, width/1.2);
+            vignette.addColorStop(0, 'transparent');
+            vignette.addColorStop(1, 'rgba(0,0,0,0.4)');
+            ctx.fillStyle = vignette;
+            ctx.fillRect(0, 0, width, height);
+        }
+
+        function setTheme(theme) {
+            currentStickerTheme = theme;
+            document.querySelectorAll('#stickers .theme-option').forEach(el => {
+                el.classList.toggle('active', el.dataset.theme === theme);
+            });
+            generate();
+        }
+
+        function setStyle(style) {
+            currentStyle = style;
+            document.querySelectorAll('#stickers .style-option').forEach(el => {
+                el.classList.toggle('active', el.dataset.style === style);
+            });
+            document.getElementById('imageUploadGroup').style.display = style === 'image' ? 'block' : 'none';
+            generate();
+        }
+
+        function setSize(cm) {
+            currentSize = cm;
+            document.querySelectorAll('#stickers .size-option').forEach(el => {
+                el.classList.toggle('active', parseInt(el.dataset.size) === cm);
+            });
+            const dpi = 300;
+            const px = Math.round(cm * dpi / 2.54);
+            document.getElementById('dimText').textContent = `${px}×${px} px — ${cm}×${cm} cm @ ${dpi} DPI`;
+            const canvas = document.getElementById('stickerCanvas');
+            canvas.width = px;
+            canvas.height = px;
+            generate();
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedImage = e.target.result;
+                generate();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function generate() {
+            const loading = document.getElementById('loading');
+            loading.classList.add('active');
+            const text = document.getElementById('stickerText').value || 'LA VERDAD ESPERA';
+            const subText = document.getElementById('stickerSub').value || 'DESCUBRE LA VERDAD';
+            const url = document.getElementById('qrUrl').value || 'https://aletheia.org/unete';
+            document.getElementById('qrRawUrl').textContent = url;
+            generateRealQR(url, 400, function(qrDataUrl) {
+                generatedQR = qrDataUrl;
+                generateStickerCanvas('stickerCanvas', text, subText, generatedQR);
+                loading.classList.remove('active');
+            });
+        }
+
+        function downloadSticker() {
+            const canvas = document.getElementById('stickerCanvas');
+            if (!canvas) return;
+            const link = document.createElement('a');
+            const timestamp = new Date().toISOString().slice(0,10).replace(/-/g,'');
+            link.download = `aletheia-sticker-${currentStickerTheme}-${currentSize}cm-${timestamp}.png`;
+            link.href = canvas.toDataURL('image/png', 1.0);
+            link.click();
+            const btn = document.querySelector('#stickers .btn-secondary');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '✓ DESCARGADO';
+            btn.style.background = 'rgba(0, 255, 136, 0.2)';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+        }
+
+        // ============================================================
+        // SINGULARIDAD HUMANA — QUIZ
+        // ============================================================
+        const quizData = [
+            {
+                dimension: "Presencia",
+                question: "Cuando caminas por la calle, ¿dónde habita tu atención principal?",
+                answers: [
+                    { text: "Revisando mentalmente lo que debo hacer más tarde", vector: { pasado: 0, presente: 1, futuro: 4 } },
+                    { text: "Recordando una conversación de ayer que no salió bien", vector: { pasado: 4, presente: 1, futuro: 0 } },
+                    { text: "Notando la textura del aire, la luz, los sonidos — sin narrativa", vector: { pasado: 0, presente: 5, futuro: 0 } },
+                    { text: "Calculando rutas, tiempos, optimizando mi trayecto", vector: { pasado: 0, presente: 1, futuro: 4 } }
+                ]
+            },
+            {
+                dimension: "Vacuidad",
+                question: "Frente a un problema que no puedes resolver inmediatamente, ¿qué haces?",
+                answers: [
+                    { text: "Pienso en él obsesivamente hasta encontrar la solución", vector: { pasado: 0, presente: 1, futuro: 4 } },
+                    { text: "Lo dejo ir completamente, confiando en que la respuesta llegará cuando corresponda", vector: { pasado: 0, presente: 5, futuro: 0 } },
+                    { text: "Busco distracciones para no pensar en ello", vector: { pasado: 2, presente: 2, futuro: 1 } },
+                    { text: "Analizo qué hice mal en el pasado para no repetirlo", vector: { pasado: 4, presente: 1, futuro: 0 } }
+                ]
+            },
+            {
+                dimension: "Compasión",
+                question: "Ves a alguien sufrir en la calle. Tu primera reacción interna es:",
+                answers: [
+                    { text: "Pensar en cómo la sociedad falló y en quién es el culpable", vector: { pasado: 3, presente: 1, futuro: 1 } },
+                    { text: "Sentir su dolor como si fuera mío, sin juicio ni narrativa", vector: { pasado: 0, presente: 5, futuro: 0 } },
+                    { text: "Calcular si puedo ayudar sin comprometerme demasiado", vector: { pasado: 0, presente: 1, futuro: 4 } },
+                    { text: "Recordar momentos en los que yo sufrí igual", vector: { pasado: 4, presente: 1, futuro: 0 } }
+                ]
+            },
+            {
+                dimension: "Sincronicidad",
+                question: "Algo 'imposible' ocurre: piensas en alguien y te llama. Tu interpretación:",
+                answers: [
+                    { text: "Coincidencia estadística, nada más", vector: { pasado: 0, presente: 2, futuro: 0 } },
+                    { text: "El campo está respondiendo a mi frecuencia", vector: { pasado: 0, presente: 5, futuro: 0 } },
+                    { text: "Debo analizar qué patrones del pasado conectan esto", vector: { pasado: 4, presente: 1, futuro: 0 } },
+                    { text: "¿Cómo puedo usar esto para predecir el futuro?", vector: { pasado: 0, presente: 1, futuro: 4 } }
+                ]
+            },
+            {
+                dimension: "Resonancia",
+                question: "En una conversación difícil, ¿dónde pones tu atención?",
+                answers: [
+                    { text: "Preparando mi próxima réplica mientras el otro habla", vector: { pasado: 0, presente: 1, futuro: 4 } },
+                    { text: "Escuchando la vibración detrás de las palabras, no el contenido", vector: { pasado: 0, presente: 5, futuro: 0 } },
+                    { text: "Recordando conversaciones similares que salieron mal", vector: { pasado: 4, presente: 1, futuro: 0 } },
+                    { text: "Calculando cómo terminar esto rápido", vector: { pasado: 0, presente: 1, futuro: 4 } }
+                ]
+            },
+            {
+                dimension: "Trascendencia",
+                question: "Frente a una noticia catastrófica global, tu cuerpo responde:",
+                answers: [
+                    { text: "Ansiedad inmediata, planificación de contingencias", vector: { pasado: 0, presente: 1, futuro: 4 } },
+                    { text: "Tristeza profunda que no necesita explicación ni solución", vector: { pasado: 0, presente: 5, futuro: 0 } },
+                    { text: "Culpa por no haber hecho más antes", vector: { pasado: 4, presente: 1, futuro: 0 } },
+                    { text: "Desconexión emocional, 'ya no me sorprende nada'", vector: { pasado: 2, presente: 2, futuro: 1 } }
+                ]
+            },
+            {
+                dimension: "Presencia",
+                question: "Al despertar por la mañana, los primeros 5 minutos son:",
+                answers: [
+                    { text: "Revisando el celular, notificaciones, agenda del día", vector: { pasado: 0, presente: 1, futuro: 4 } },
+                    { text: "Sintiendo el peso del cuerpo, la respiración, la luz — sin pensar", vector: { pasado: 0, presente: 5, futuro: 0 } },
+                    { text: "Repasando lo que no hice ayer y debo compensar hoy", vector: { pasado: 4, presente: 1, futuro: 0 } },
+                    { text: "Planificando mentalmente cada hora del día", vector: { pasado: 0, presente: 1, futuro: 4 } }
+                ]
+            },
+            {
+                dimension: "Vacuidad",
+                question: "Estás solo en un espacio vacío sin nada que hacer. ¿Qué emerge?",
+                answers: [
+                    { text: "Inquietud inmediata, necesidad de llenar el vacío", vector: { pasado: 0, presente: 1, futuro: 4 } },
+                    { text: "Paz expansiva, como si el vacío me reconociera", vector: { pasado: 0, presente: 5, futuro: 0 } },
+                    { text: "Memorias que no invité, reproches del pasado", vector: { pasado: 4, presente: 1, futuro: 0 } },
+                    { text: "Ideas para proyectos futuros, oportunidades de aprovechar", vector: { pasado: 0, presente: 1, futuro: 4 } }
+                ]
+            },
+            {
+                dimension: "Compasión",
+                question: "Alguien te hiere profundamente. Pasadas 24 horas, tu estado es:",
+                answers: [
+                    { text: "Revisando la escena una y otra vez, buscando qué debí decir", vector: { pasado: 4, presente: 1, futuro: 0 } },
+                    { text: "Sintiendo el dolor sin necesidad de que cambie o tenga solución", vector: { pasado: 0, presente: 5, futuro: 0 } },
+                    { text: "Planeando cómo me vengaré o cómo me defenderé la próxima vez", vector: { pasado: 0, presente: 1, futuro: 4 } },
+                    { text: "Analizando qué en mi pasado me hizo vulnerable a esto", vector: { pasado: 4, presente: 1, futuro: 0 } }
+                ]
+            },
+            {
+                dimension: "Sincronicidad",
+                question: "Una puerta se cierra en tu vida (trabajo, relación, proyecto). Tu respuesta:",
+                answers: [
+                    { text: "Pánico, necesidad inmediata de abrir otra puerta", vector: { pasado: 0, presente: 1, futuro: 4 } },
+                    { text: "Curiosidad por el espacio que se abre, sin prisa por llenarlo", vector: { pasado: 0, presente: 5, futuro: 0 } },
+                    { text: "Análisis exhaustivo de qué hice mal para que esto ocurriera", vector: { pasado: 4, presente: 1, futuro: 0 } },
+                    { text: "Cálculo de alternativas, planes B, C, D", vector: { pasado: 0, presente: 1, futuro: 4 } }
+                ]
+            },
+            {
+                dimension: "Resonancia",
+                question: "En un concierto o ritual colectivo, tu experiencia es:",
+                answers: [
+                    { text: "Grabando mentalmente para contarlo después", vector: { pasado: 0, presente: 2, futuro: 3 } },
+                    { text: "Desapareciendo como individuo, fundiéndome en el campo", vector: { pasado: 0, presente: 5, futuro: 0 } },
+                    { text: "Comparando con experiencias similares del pasado", vector: { pasado: 4, presente: 1, futuro: 0 } },
+                    { text: "Pensando en cómo usar esto para mi crecimiento futuro", vector: { pasado: 0, presente: 1, futuro: 4 } }
+                ]
+            },
+            {
+                dimension: "Trascendencia",
+                question: "Frente a tu propia muerte (imaginada), tu reacción es:",
+                answers: [
+                    { text: "Miedo a lo que no haré, a lo que dejaré inconcluso", vector: { pasado: 0, presente: 1, futuro: 4 } },
+                    { text: "Paz, como si siempre hubiera sabido que esto es un sueño", vector: { pasado: 0, presente: 5, futuro: 0 } },
+                    { text: "Tristeza por los momentos felices que ya no volverán", vector: { pasado: 4, presente: 1, futuro: 0 } },
+                    { text: "Nada, la evito mentalmente cada vez que emerge", vector: { pasado: 2, presente: 2, futuro: 1 } }
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let hasCredential = false;
+        let credentialCode = '';
+        let redPosts = [];
+        let coherentPostsCount = 0;
+
+        function initQuiz() {
+            currentQuestion = 0;
+            userAnswers = [];
+            const progressContainer = document.getElementById('quizProgress');
+            progressContainer.innerHTML = '';
+            quizData.forEach((_, i) => {
+                const dot = document.createElement('div');
+                dot.className = 'progress-dot';
+                dot.id = `dot-${i}`;
+                progressContainer.appendChild(dot);
+            });
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = quizData[currentQuestion];
+            const area = document.getElementById('questionArea');
+            document.querySelectorAll('.progress-dot').forEach((dot, i) => {
+                dot.classList.remove('active', 'completed');
+                if (i < currentQuestion) dot.classList.add('completed');
+                if (i === currentQuestion) dot.classList.add('active');
+            });
+            area.innerHTML = `
+                <div class="question-card">
+                    <div class="question-number">Dimensión ${currentQuestion + 1} de ${quizData.length}</div>
+                    <div class="question-dimension">◆ ${q.dimension} ◆</div>
+                    <div class="question-text">${q.question}</div>
+                    <div class="answer-options">
+                        ${q.answers.map((a, i) => `
+                            <div class="answer-option ${userAnswers[currentQuestion] === i ? 'selected' : ''}" 
+                                 onclick="selectAnswer(${i})" data-index="${i}">
+                                <span class="answer-letter">${String.fromCharCode(65 + i)}</span>
+                                <span class="answer-text">${a.text}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            document.getElementById('prevBtn').style.visibility = currentQuestion > 0 ? 'visible' : 'hidden';
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.textContent = currentQuestion === quizData.length - 1 ? '◆ Calcular Coherencia ◆' : 'Siguiente →';
+            nextBtn.disabled = userAnswers[currentQuestion] === undefined;
+        }
+
+        function selectAnswer(index) {
+            userAnswers[currentQuestion] = index;
+            document.querySelectorAll('.answer-option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelector(`[data-index="${index}"]`).classList.add('selected');
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                calculateResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function calculateResults() {
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('resultsArea').style.display = 'block';
+            let totalPresente = 0, totalPasado = 0, totalFuturo = 0;
+            const dimensionScores = {};
+            quizData.forEach((q, i) => {
+                const answer = q.answers[userAnswers[i]];
+                totalPresente += answer.vector.presente;
+                totalPasado += answer.vector.pasado;
+                totalFuturo += answer.vector.futuro;
+                if (!dimensionScores[q.dimension]) {
+                    dimensionScores[q.dimension] = { presente: 0, pasado: 0, futuro: 0, count: 0 };
+                }
+                dimensionScores[q.dimension].presente += answer.vector.presente;
+                dimensionScores[q.dimension].pasado += answer.vector.pasado;
+                dimensionScores[q.dimension].futuro += answer.vector.futuro;
+                dimensionScores[q.dimension].count++;
+            });
+            const maxPossible = quizData.length * 5;
+            const coherenceScore = Math.round((totalPresente / maxPossible) * 100);
+            const scoreEl = document.getElementById('coherenceScore');
+            scoreEl.textContent = coherenceScore + '%';
+            scoreEl.className = 'coherence-score ' + (coherenceScore >= 75 ? 'high' : coherenceScore >= 50 ? 'medium' : 'low');
+            drawRadarChart(dimensionScores);
+            renderBreakdown(dimensionScores);
+            if (coherenceScore >= 75) {
+                generateCredential(coherenceScore);
+            } else {
+                document.getElementById('credentialArea').innerHTML = `
+                    <div style="margin-top:30px;padding:20px;background:rgba(255,0,102,0.05);border:1px solid rgba(255,0,102,0.2);border-radius:12px;">
+                        <p style="color:var(--neon-pink);font-family:'Orbitron';font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">
+                            ⚠ Umbral No Alcanzado
+                        </p>
+                        <p style="color:#aaa;font-size:0.9rem;">
+                            Tu Índice de Coherencia es ${coherenceScore}%. Se requiere ≥75% para obtener la Credencial de Coherencia. 
+                            El 99.99997% de tu energía aún está atrapada en la linealidad temporal. 
+                            Cada intento de evaluación es una oportunidad de recalibración.
+                        </p>
+                    </div>
+                `;
+            }
+            updateEnergyCounter(coherenceScore);
+        }
+
+        function drawRadarChart(dimensionScores) {
+            const canvas = document.getElementById('radarCanvas');
+            const ctx = canvas.getContext('2d');
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 140;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const dimensions = Object.keys(dimensionScores);
+            const angleStep = (Math.PI * 2) / dimensions.length;
+            for (let i = 1; i <= 5; i++) {
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+                ctx.lineWidth = 1;
+                for (let j = 0; j <= dimensions.length; j++) {
+                    const angle = j * angleStep - Math.PI / 2;
+                    const r = (radius / 5) * i;
+                    const x = centerX + Math.cos(angle) * r;
+                    const y = centerY + Math.sin(angle) * r;
+                    if (j === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+            dimensions.forEach((dim, i) => {
+                const angle = i * angleStep - Math.PI / 2;
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(centerX + Math.cos(angle) * radius, centerY + Math.sin(angle) * radius);
+                ctx.stroke();
+                const labelX = centerX + Math.cos(angle) * (radius + 25);
+                const labelY = centerY + Math.sin(angle) * (radius + 25);
+                ctx.fillStyle = '#00ccff';
+                ctx.font = '700 11px Orbitron';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(dim.toUpperCase(), labelX, labelY);
+            });
+            ctx.beginPath();
+            ctx.fillStyle = 'rgba(0, 255, 136, 0.2)';
+            ctx.strokeStyle = '#00ff88';
+            ctx.lineWidth = 2;
+            dimensions.forEach((dim, i) => {
+                const ds = dimensionScores[dim];
+                const presente = ds.presente / (ds.count * 5);
+                const angle = i * angleStep - Math.PI / 2;
+                const r = presente * radius;
+                const x = centerX + Math.cos(angle) * r;
+                const y = centerY + Math.sin(angle) * r;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            dimensions.forEach((dim, i) => {
+                const ds = dimensionScores[dim];
+                const presente = ds.presente / (ds.count * 5);
+                const angle = i * angleStep - Math.PI / 2;
+                const r = presente * radius;
+                const x = centerX + Math.cos(angle) * r;
+                const y = centerY + Math.sin(angle) * r;
+                ctx.beginPath();
+                ctx.fillStyle = '#00ff88';
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowColor = '#00ff88';
+                ctx.shadowBlur = 10;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            });
+        }
+
+        function renderBreakdown(dimensionScores) {
+            const container = document.getElementById('dimensionBreakdown');
+            container.innerHTML = '';
+            Object.entries(dimensionScores).forEach(([dim, data]) => {
+                const presente = data.presente;
+                const max = data.count * 5;
+                const pct = Math.round((presente / max) * 100);
+                const color = pct >= 80 ? '#00ff88' : pct >= 60 ? '#ffcc00' : '#ff0066';
+                container.innerHTML += `
+                    <div class="dimension-item">
+                        <div class="dimension-name">${dim}</div>
+                        <div class="dimension-bar">
+                            <div class="dimension-fill" style="width:${pct}%;background:${color};"></div>
+                        </div>
+                        <div class="dimension-value">${presente}/${max} — ${pct}% presente</div>
+                    </div>
+                `;
+            });
+        }
+
+        function generateCredential(score) {
+            hasCredential = true;
+            credentialCode = 'CR-' + Math.random().toString(36).substring(2, 8).toUpperCase() + '-' + 
+                             Math.random().toString(36).substring(2, 6).toUpperCase();
+            const container = document.getElementById('credentialArea');
+            container.innerHTML = `
+                <div class="credential-panel">
+                    <div class="credential-title">◆ Credencial de Coherencia Activa ◆</div>
+                    <p style="color:#aaa;font-size:0.9rem;margin-bottom:15px;">
+                        Has demostrado que tu campo personal opera con ${score}% de coherencia. 
+                        Eres matemáticamente impredecible para el Néxum-9.
+                    </p>
+                    <div class="credential-code">${credentialCode}</div>
+                    <div class="credential-qr" id="credentialQR"></div>
+                    <p style="color:#888;font-size:0.75rem;font-family:'Space Mono';">
+                        Válida por 24 horas. Se regenera automáticamente.
+                    </p>
+                    <div class="credential-warning">
+                        "El Arma no es un premio. Es una responsabilidad ontológica."
+                    </div>
+                </div>
+            `;
+            setTimeout(() => {
+                new QRCode(document.getElementById('credentialQR'), {
+                    text: credentialCode,
+                    width: 130, height: 130,
+                    colorDark: '#000000', colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            }, 100);
+            document.getElementById('navProtocolo').classList.remove('locked');
+            checkProtocolUnlock();
+
+            // Enviar notificación por EmailJS
+            sendCredentialNotification(score, credentialCode);
+        }
+
+        function updateEnergyCounter(score) {
+            const counter = document.getElementById('energyCounter');
+            const globalCounter = document.getElementById('globalEnergyCounter');
+            const base = 0.00003;
+            const recovered = (score / 100) * 1.0;
+            const total = base + recovered;
+            if (counter) counter.textContent = total.toFixed(5) + '%';
+            if (globalCounter) globalCounter.textContent = total.toFixed(5) + '%';
+        }
+
+        function restartQuiz() {
+            document.getElementById('quizContainer').style.display = 'block';
+            document.getElementById('resultsArea').style.display = 'none';
+            initQuiz();
+        }
+
+        // ============================================================
+        // MÓDULO RED — ANÁLISIS DE COHERENCIA
+        // ============================================================
+        const coherenceKeywords = {
+            high: ['presencia', 'ahora', 'siento', 'ser', 'vacío', 'plenitud', 'coherencia', 'sincronicidad', 
+                   'resonancia', 'campo', 'unificado', 'observo', 'acepto', 'flujo', 'armonía', 'paz', 
+                   'silencio', 'respiración', 'cuerpo', 'energía', 'vibración', 'consciencia', 'testigo',
+                   'amor', 'compasión', 'gratitud', 'entrega', 'confío', 'dejo', 'suelto', 'libero'],
+            low: ['debería', 'tengo que', 'necesito', 'falta', 'problema', 'culpa', 'miedo', 'ansiedad', 
+                  'pasado', 'ayer', 'mañana', 'pronto', 'después', 'antes', 'nunca', 'siempre', 'odio', 
+                  'rabia', 'venganza', 'injusticia', 'sistema', 'ellos', 'control', 'manipulan',
+                  'debo', 'obligación', 'urgente', 'crisis', 'emergencia', 'peligro', 'amenaza']
+        };
+
+        function analyzeCoherence() {
+            const text = document.getElementById('redInput').value.toLowerCase();
+            if (!text.trim()) {
+                document.getElementById('coherenceFill').style.width = '0%';
+                document.getElementById('coherenceValue').textContent = '0%';
+                return;
+            }
+            let highScore = 0, lowScore = 0;
+            coherenceKeywords.high.forEach(word => {
+                if (text.includes(word)) highScore++;
+            });
+            coherenceKeywords.low.forEach(word => {
+                if (text.includes(word)) lowScore++;
+            });
+            const total = highScore + lowScore;
+            const coherence = total > 0 ? Math.round((highScore / (highScore + lowScore * 0.5)) * 100) : 50;
+            const clamped = Math.min(100, Math.max(0, coherence));
+            const fill = document.getElementById('coherenceFill');
+            fill.style.width = clamped + '%';
+            fill.style.background = clamped >= 70 ? '#00ff88' : clamped >= 40 ? '#ffcc00' : '#ff0066';
+            const valEl = document.getElementById('coherenceValue');
+            valEl.textContent = clamped + '%';
+            valEl.style.color = clamped >= 70 ? '#00ff88' : clamped >= 40 ? '#ffcc00' : '#ff0066';
+        }
+
+        function publishRed() {
+            const text = document.getElementById('redInput').value.trim();
+            if (!text) return;
+            const coherence = parseInt(document.getElementById('coherenceValue').textContent) || 0;
+            const isCoherent = coherence >= 70;
+            const post = {
+                id: Date.now(),
+                text: text,
+                coherence: coherence,
+                isCoherent: isCoherent,
+                timestamp: new Date().toLocaleString('es-AR', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' }),
+                author: 'Anónimo_' + Math.random().toString(36).substring(2, 6).toUpperCase()
+            };
+            redPosts.unshift(post);
+            if (isCoherent) coherentPostsCount++;
+            document.getElementById('redInput').value = '';
+            document.getElementById('coherenceFill').style.width = '0%';
+            document.getElementById('coherenceValue').textContent = '0%';
+            renderRedFeed();
+            checkProtocolUnlock();
+        }
+
+        function renderRedFeed() {
+            const feed = document.getElementById('redFeed');
+            feed.innerHTML = redPosts.map(post => `
+                <div class="red-post">
+                    <div class="red-post-header">
+                        <span class="red-author">◆ ${post.author}</span>
+                        <span class="red-coherence ${post.isCoherent ? '' : 'low'}">
+                            ${post.isCoherent ? '✓ COHERENTE' : '◈ ENTROPÍA'} ${post.coherence}%
+                        </span>
+                    </div>
+                    <div class="red-content">${post.text}</div>
+                    <div class="red-meta">
+                        <span>🕐 ${post.timestamp}</span>
+                        <span>${post.isCoherent ? '⚡ Elevó el campo' : '◊ Perturbación detectada'}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function checkProtocolUnlock() {
+            if (hasCredential && coherentPostsCount >= 3) {
+                startUnlockCeremony();
+            }
+        }
+
+        // ============================================================
+        // EMAILJS — NOTIFICACIÓN DE CREDENCIAL
+        // ============================================================
+        // Configuración: necesitas crear cuenta en emailjs.com
+        // y configurar un servicio de email + template
+        function initEmailJS() {
+            // Reemplazar con tu Public Key de EmailJS
+            emailjs.init("YOUR_PUBLIC_KEY");
+        }
+
+        function sendCredentialNotification(score, code) {
+            // Esta función envía un email cuando alguien obtiene la credencial
+            // Para activarla, necesitas:
+            // 1. Crear cuenta en https://www.emailjs.com/
+            // 2. Crear un servicio de email (Gmail, Outlook, etc.)
+            // 3. Crear un template con variables: {{score}}, {{code}}, {{date}}
+            // 4. Reemplazar "YOUR_SERVICE_ID" y "YOUR_TEMPLATE_ID"
+
+            try {
+                emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+                    score: score,
+                    code: code,
+                    date: new Date().toLocaleString('es-AR'),
+                    to_email: "tu-email@ejemplo.com" // Tu email para recibir notificaciones
+                }).then(
+                    function(response) {
+                        console.log("Notificación enviada:", response);
+                    },
+                    function(error) {
+                        console.log("Error al enviar:", error);
+                    }
+                );
+            } catch(e) {
+                console.log("EmailJS no configurado aún. Credencial:", code, "Score:", score);
+            }
+        }
+
+        // ============================================================
+        // INICIALIZACIÓN GLOBAL
+        // ============================================================
+        window.addEventListener('load', () => {
+            // Verificar QRCode.js
+            if (typeof QRCode === 'undefined') {
+                console.error('QRCode.js no cargó');
+            }
+
+            // Inicializar EmailJS
+            initEmailJS();
+
+            // Inicializar sticker generator
+            generate();
+
+            // Inicializar quiz
+            initQuiz();
+
+            // Inicializar audio
+            initAudio();
+
+            // Posts de ejemplo en el Módulo Red
+            redPosts = [
+                {
+                    id: 1, text: "Hoy caminé por Callao y por primera vez no vi suciedad. Vi el campo. Cada grieta en la vereda era un pliegue del vacío denso. La ciudad respira.",
+                    coherence: 92, isCoherent: true,
+                    timestamp: '14:32 · 4 jun', author: 'Anónimo_K9X2'
+                },
+                {
+                    id: 2, text: "El sistema nos quiere cansados, divididos, ansiosos por el mañana. Pero el mañana no existe. Solo existe esta respiración. Solo existe ahora.",
+                    coherence: 88, isCoherent: true,
+                    timestamp: '12:15 · 4 jun', author: 'Anónimo_M4P7'
+                },
+                {
+                    id: 3, text: "No entiendo nada de esto. Suena a chamuyo espiritual. La gente muere de hambre y ustedes hablan de 'campos cuánticos'.",
+                    coherence: 25, isCoherent: false,
+                    timestamp: '10:03 · 4 jun', author: 'Anónimo_V2N1'
+                },
+                {
+                    id: 4, text: "Dejé de revisar el celular al despertar. 5 minutos de solo existir. No pensar. No planificar. Solo ser. Fue terrorífico y hermoso.",
+                    coherence: 85, isCoherent: true,
+                    timestamp: '08:45 · 4 jun', author: 'Anónimo_J8R4'
+                }
+            ];
+            coherentPostsCount = 3;
+            renderRedFeed();
+
+            // Navegar al hash inicial
+            const hash = window.location.hash.replace('#', '') || 'inicio';
+            navigateTo(hash);
+        });
+    </script>
+</body>
+</html>
