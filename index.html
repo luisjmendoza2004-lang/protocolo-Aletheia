@@ -1638,9 +1638,9 @@ function downloadSticker() {
 // ============================================================
 function initEmailJS() {
   // Reemplazar con tus credenciales reales de EmailJS
-  const PUBLIC_KEY = 'YOUR_PUBLIC_KEY';
-  if (PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
-    emailjs.init(PUBLIC_KEY);
+  const PUBLIC_KEY = 'SXwt9l4Rv-DpRIAE5';
+  if (PUBLIC_KEY !== 'SXwt9l4Rv-DpRIAE5') {
+    emailjs.init(SXwt9l4Rv-DpRIAE5);
     emailjsInitialized = true;
     document.getElementById('emailjsStatus').textContent = 'CONFIGURADO';
     document.getElementById('emailjsStatus').style.color = 'var(--neon)';
@@ -1654,7 +1654,7 @@ function sendEmailNotification(type, data) {
   }
 
   const templateParams = {
-    to_email: 'tu-email@ejemplo.com',
+    to_email: 'aletheia.projet45@gmail.com',
     type: type,
     score: data.score || 'N/A',
     code: data.code || 'N/A',
@@ -1664,7 +1664,7 @@ function sendEmailNotification(type, data) {
       : `Nueva descarga de Capítulo 0`
   };
 
-  emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+  emailjs.send('service_tloidno', 'template_8hhmh57', templateParams)
     .then(() => {
       const sent = parseInt(document.getElementById('emailsSent').textContent) + 1;
       document.getElementById('emailsSent').textContent = sent;
